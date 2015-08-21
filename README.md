@@ -1,5 +1,7 @@
 # XBlock-Poll
 
+VASILY
+
 > A user-friendly way to query students.
 
 This XBlock has been contributed by [McKinsey Academy](http://mckinseyacademy.com/), and is published under the
