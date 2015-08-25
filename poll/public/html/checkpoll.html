@@ -10,7 +10,7 @@
       <ul class="poll-answers">
       {% for key, value in answers %}
           <li class="poll-answer">
-              <input type="radio" name="choice" id="{{url_name}}-answer-{{key}}" value="{{key}}" {% if choice == key %}checked{% endif %}/>
+              <input type="checkbox" name="choice" id="{{url_name}}-answer-{{key}}" value="{{key}}" {% if choice == key %}checked{% endif %}/>
               {% if value.img %}
               <div class="poll-image">
                   <label for="{{url_name}}-answer-{{key}}" class="poll-image-label">

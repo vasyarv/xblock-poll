@@ -847,3 +847,276 @@ class SurveyBlock(PollBase):
                  feedback="### Thank you&#10;&#10;for running the tests."/>
              """)
         ]
+
+
+class CheckPollBlock(PollBase):
+    """
+    Poll XBlock. Allows a teacher to poll users, and presents the results so
+    far of the poll to the user when finished.
+    """
+    # pylint: disable=too-many-instance-attributes
+
+    display_name = String(default='CheckPoll')
+    question = String(default='What is your favorite color?')
+    # This will be converted into an OrderedDict.
+    # Key, (Label, Image path)
+    answers = List(
+        default=(('R', {'label': 'Red', 'img': None}), ('B', {'label': 'Blue', 'img': None}),
+                 ('G', {'label': 'Green', 'img': None}), ('O', {'label': 'Other', 'img': None})),
+        scope=Scope.settings, help="The answer options on this poll."
+    )
+    tally = Dict(default={'R': 0, 'B': 0, 'G': 0, 'O': 0},
+                 scope=Scope.user_state_summary,
+                 help="Total tally of answers from students.")
+    choice = String(scope=Scope.user_state, help="The student's answer")
+    event_namespace = 'xblock.checkpoll'
+
+    def clean_tally(self):
+        """
+        Cleans the tally. Scoping prevents us from modifying this in the studio
+        and in the LMS the way we want to without undesirable side effects. So
+        we just clean it up on first access within the LMS, in case the studio
+        has made changes to the answers.
+        """
+        answers = OrderedDict(self.answers)
+        for key in answers.keys():
+            if key not in self.tally:
+                self.tally[key] = 0
+
+        for key in self.tally.keys():
+            if key not in answers:
+                del self.tally[key]
+
+    def tally_detail(self):
+        """
+        Return a detailed dictionary from the stored tally that the
+        Handlebars template can use.
+        """
+        tally = []
+        answers = OrderedDict(self.markdown_items(self.answers))
+        choice = self.get_choice()
+        total = 0
+        self.clean_tally()
+        source_tally = self.tally
+        any_img = self.any_image(self.answers)
+        for key, value in answers.items():
+            count = int(source_tally[key])
+            tally.append({
+                'count': count,
+                'answer': value['label'],
+                'img': value['img'],
+                'key': key,
+                'first': False,
+                'choice': False,
+                'last': False,
+                'any_img': any_img,
+            })
+            total += count
+
+        for answer in tally:
+            if answer['key'] == choice:
+                answer['choice'] = True
+            try:
+                answer['percent'] = round(answer['count'] / float(total) * 100)
+            except ZeroDivisionError:
+                answer['percent'] = 0
+
+        tally.sort(key=lambda x: x['count'], reverse=True)
+        # This should always be true, but on the off chance there are
+        # no answers...
+        if tally:
+            # Mark the first and last items to make things easier for Handlebars.
+            tally[0]['first'] = True
+            tally[-1]['last'] = True
+        return tally, total
+
+    def get_choice(self):
+        """
+        It's possible for the choice to have been removed since
+        the student answered the poll. We don't want to take away
+        the user's progress, but they should be able to vote again.
+        """
+        if self.choice and self.choice in OrderedDict(self.answers):
+            return self.choice
+        else:
+            return None
+
+    def student_view(self, context=None):
+        """
+        The primary view of the PollBlock, shown to students
+        when viewing courses.
+        """
+        if not context:
+            context = {}
+        js_template = self.resource_string(
+            '/public/handlebars/poll_results.handlebars')
+
+        choice = self.get_choice()
+
+        context.update({
+            'choice': choice,
+            # Offset so choices will always be True.
+            'answers': self.markdown_items(self.answers),
+            'question': markdown(self.question),
+            'private_results': self.private_results,
+            # Mustache is treating an empty string as true.
+            'feedback': markdown(self.feedback) or False,
+            'js_template': js_template,
+            'any_img': self.any_image(self.answers),
+            # The SDK doesn't set url_name.
+            'url_name': getattr(self, 'url_name', ''),
+            'display_name': self.display_name,
+            'can_vote': self.can_vote(),
+            'max_submissions': self.max_submissions,
+            'submissions_count': self.submissions_count,
+            'can_view_private_results': self.can_view_private_results(),
+        })
+
+        if self.choice:
+            detail, total = self.tally_detail()
+            context.update({'tally': detail, 'total': total, 'plural': total > 1})
+
+        return self.create_fragment(
+            context, "public/html/checkpoll.html", "public/css/checkpoll.css",
+            "public/js/checkpoll.js", "CheckPollBlock")
+
+    def studio_view(self, context=None):
+        if not context:
+            context = {}
+
+        js_template = self.resource_string('/public/handlebars/poll_studio.handlebars') #####!!!!!
+        context.update({
+            'question': self.question,
+            'display_name': self.display_name,
+            'private_results': self.private_results,
+            'feedback': self.feedback,
+            'js_template': js_template,
+            'max_submissions': self.max_submissions,
+        })
+        return self.create_fragment(
+            context, "public/html/poll_edit.html",
+            "/public/css/poll_edit.css", "public/js/poll_edit.js", "PollEdit")
+
+    @XBlock.json_handler
+    def load_answers(self, data, suffix=''):
+        return {
+            'items': [
+                {
+                    'key': key, 'text': value['label'], 'img': value['img'],
+                    'noun': 'answer', 'image': True,
+                    }
+                for key, value in self.answers
+            ],
+        }
+
+    @XBlock.json_handler
+    def get_results(self, data, suffix=''):
+        if self.private_results and not self.can_view_private_results():
+            detail, total = {}, None
+        else:
+            self.publish_event_from_dict(self.event_namespace + '.view_results', {})
+            detail, total = self.tally_detail()
+        return {
+            'question': markdown(self.question), 'tally': detail,
+            'total': total, 'feedback': markdown(self.feedback),
+            'plural': total > 1, 'display_name': self.display_name,
+        }
+
+    @XBlock.json_handler
+    def vote(self, data, suffix=''):
+        """
+        Sets the user's vote.
+        """
+        result = {'success': False, 'errors': []}
+        old_choice = self.get_choice()
+        if (old_choice is not None) and not self.private_results:
+            result['errors'].append('You have already voted in this poll.')
+            return result
+        try:
+            choice = data['choice']
+        except KeyError:
+            result['errors'].append('Answer not included with request.')
+            return result
+        # Just to show data coming in...
+        try:
+            OrderedDict(self.answers)[choice]
+        except KeyError:
+            result['errors'].append('No key "{choice}" in answers table.'.format(choice=choice))
+            return result
+
+        if old_choice is None:
+            # Reset submissions count if old choice is bogus.
+            self.submissions_count = 0
+
+        if not self.can_vote():
+            result['errors'].append('You have already voted as many times as you are allowed.')
+            return result
+
+        self.clean_tally()
+        if old_choice is not None:
+            self.tally[old_choice] -= 1
+        self.choice = choice
+        self.tally[choice] += 1
+        self.submissions_count += 1
+
+        result['success'] = True
+        result['can_vote'] = self.can_vote()
+        result['submissions_count'] = self.submissions_count
+        result['max_submissions'] = self.max_submissions
+
+        self.send_vote_event({'choice': self.choice})
+
+        return result
+
+    @XBlock.json_handler
+    def studio_submit(self, data, suffix=''):
+        result = {'success': True, 'errors': []}
+        question = data.get('question', '').strip()
+        feedback = data.get('feedback', '').strip()
+        private_results = bool(data.get('private_results', False))
+
+        max_submissions = self.get_max_submissions(data, result, private_results)
+
+        display_name = data.get('display_name', '').strip()
+        if not question:
+            result['errors'].append("You must specify a question.")
+            result['success'] = False
+
+        answers = self.gather_items(data, result, 'Answer', 'answers')
+
+        if not result['success']:
+            return result
+
+        self.answers = answers
+        self.question = question
+        self.feedback = feedback
+        self.private_results = private_results
+        self.display_name = display_name
+        self.max_submissions = max_submissions
+
+        # Tally will not be updated until the next attempt to use it, per
+        # scoping limitations.
+
+        return result
+
+    @staticmethod
+    def workbench_scenarios():
+        """
+        Canned scenarios for display in the workbench.
+        """
+        return [
+            ("Default Poll",
+             """
+             <poll />
+             """),
+            ("Customized Poll",
+             """
+             <poll tally="{'long': 20, 'short': 29, 'not_saying': 15, 'longer' : 35}"
+                 question="## How long have you been studying with us?"
+                 answers='[["longt", {"label": "A very long time", "img": null}],
+                           ["short", {"label": "Not very long", "img": null}],
+                           ["not_saying", {"label": "I shall not say", "img": null}],
+                           ["longer", {"label": "Longer than you", "img": null}]]'
+                 feedback="### Thank you&#10;&#10;for being a valued student."/>
+             """),
+        ]
