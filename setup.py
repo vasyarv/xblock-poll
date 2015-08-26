@@ -46,7 +46,7 @@ setup(
     version='0.2',
     description='An XBlock for polling users.',
     packages=[
-        'poll',
+        'checkpoll',
     ],
     install_requires=[
         'XBlock',
@@ -61,5 +61,5 @@ setup(
             'checkpoll = checkpoll:CheckPollBlock',
         ]
     },
-    package_data=package_data("poll", ["static", "public"]),
+    package_data=package_data("checkpoll", ["static", "public"]),
 )
