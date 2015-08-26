@@ -41,7 +41,6 @@ def package_data(pkg, roots):
 
     return {pkg: data}
 
-
 setup(
     name='xblock-checkpoll',
     version='0.2',
