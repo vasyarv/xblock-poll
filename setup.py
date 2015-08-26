@@ -59,7 +59,7 @@ setup(
     dependency_links=['http://github.com/edx-solutions/xblock-utils/tarball/master#egg=xblock-utils'],
     entry_points={
         'xblock.v1': [
-            'checkpoll = poll:CheckPollBlock',
+            'checkpoll = checkpoll:CheckPollBlock',
         ]
     },
     package_data=package_data("poll", ["static", "public"]),
