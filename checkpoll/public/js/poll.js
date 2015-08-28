@@ -4,6 +4,7 @@ function PollUtil (runtime, element, pollType) {
     var self = this;
 
     this.init = function() {
+        console.log("this init");
         // Initialization function used for both Poll Types
         this.voteUrl = runtime.handlerUrl(element, 'vote');
         this.tallyURL = runtime.handlerUrl(element, 'get_results');
@@ -30,6 +31,7 @@ function PollUtil (runtime, element, pollType) {
     };
 
     this.checkPollInit = function(){
+        console.log("checkpollInit");
         // Initialization function for Survey Blocks
 
         // If the user is unable to vote, disable input.
@@ -114,6 +116,7 @@ function PollUtil (runtime, element, pollType) {
     };
 
     this.surveyChoices = function () {
+        console.log("surveyChoices");
         // Grabs all selections for survey answers, and returns a mapping for them.
         var choices = {};
         self.answers.each(function(index, el) {
@@ -124,6 +127,7 @@ function PollUtil (runtime, element, pollType) {
     };
 
     this.checkPollChoices = function () {
+        console.log("checkpollChoices");
         var choices = [];
         self.checkAnswers.each(function(index, el) {
             if (el.checked) {
@@ -135,12 +139,14 @@ function PollUtil (runtime, element, pollType) {
     };
 
     this.checkedElement = function (el) {
+        console.log("checked element");
         // Given the DOM element of a radio, get the selector for the checked element
         // with the same name.
         return "input[name='" + el.prop('name') + "']:checked"
     };
 
     this.verifyAll = function () {
+        console.log("verify all");
         // Verify that all questions have an answer selected.
         var doEnable = true;
         self.answers.each(function (index, el) {
@@ -170,6 +176,7 @@ function PollUtil (runtime, element, pollType) {
     };
 
     this.onSubmit = function (data) {
+        console.log("on submit");
         // Fetch the results from the server and render them.
         if (!data['success']) {
             alert(data['errors'].join('\n'));
@@ -197,6 +204,7 @@ function PollUtil (runtime, element, pollType) {
     };
 
     this.getResults = function () {
+        console.log("get rsults");
         // Used if results are not private, to show the user how other students voted.
         $.ajax({
             // Semantically, this would be better as GET, but we can use helper
@@ -211,6 +219,7 @@ function PollUtil (runtime, element, pollType) {
     };
 
     this.enableSubmit = function () {
+        console.log("enable submit");
         // Enable the submit button.
         self.submit.removeAttr("disabled");
         self.answers.unbind("change.enableSubmit");  //need to add checkANSWES
@@ -219,6 +228,7 @@ function PollUtil (runtime, element, pollType) {
 
     var run_init = this.init();
     if (run_init) {
+        console.log("run init");
         var init_map = {'poll': self.pollInit, 'survey': self.surveyInit, 'checkpoll': self.checkPollInit()};
         init_map[pollType]()
     }
