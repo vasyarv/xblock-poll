@@ -51,7 +51,7 @@ function PollUtil (runtime, element, pollType) {
             return
         }
 
-        console.log("verify all");
+        console.log("verify all in checkpoll init");
         self.checkAnswers.bind("change.enableSubmit", self.verifyAll);
 
         self.submit.click(function () {
@@ -98,6 +98,7 @@ function PollUtil (runtime, element, pollType) {
                 el = $(el);
                 temp.push(el.val()); //maybe element is needed
             }
+            console.log(temp);
 
             if (! temp.length) {
                 doEnable = false;
@@ -105,6 +106,7 @@ function PollUtil (runtime, element, pollType) {
             }
         });
 
+        console.log("Verify all is true");
         if (doEnable){
             self.enableSubmit();
         }
