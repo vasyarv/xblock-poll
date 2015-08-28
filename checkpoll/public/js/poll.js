@@ -39,6 +39,7 @@ function PollUtil (runtime, element, pollType) {
         }
 
         self.answers.bind("change.enableSubmit", self.verifyAll);
+        console.log(self.verifyAll());
         self.checkAnswers.bind("change.enableSubmit", self.verifyAll);
 
         self.submit.click(function () {

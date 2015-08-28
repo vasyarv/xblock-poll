@@ -978,7 +978,7 @@ class CheckPollBlock(PollBase):
 
         return self.create_fragment(
             context, "public/html/checkpoll.html", "public/css/checkpoll.css",
-            "public/js/checkpoll.js", "CheckPollBlock")
+            "public/js/poll.js", "CheckPollBlock")
 
     def studio_view(self, context=None):
         if not context:
