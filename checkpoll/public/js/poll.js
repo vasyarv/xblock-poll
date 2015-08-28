@@ -10,9 +10,9 @@ function PollUtil (runtime, element, pollType) {
         this.tallyURL = runtime.handlerUrl(element, 'get_results');
 
         this.submit = $('input[type=button]', element);
-        this.answers = $('input[type=radio]', element);
 
         this.checkAnswers = $('input[type=checkbox]', element); //get the array of checkboxes
+
         this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
         this.viewResultsButton = $('.view-results-button', element);
         this.viewResultsButton.click(this.getResults);
@@ -40,8 +40,7 @@ function PollUtil (runtime, element, pollType) {
             return
         }
 
-        self.answers.bind("change.enableSubmit", self.verifyAll);
-        console.log(self.verifyAll());
+        console.log("verify all");
         self.checkAnswers.bind("change.enableSubmit", self.verifyAll);
 
         self.submit.click(function () {
@@ -55,75 +54,6 @@ function PollUtil (runtime, element, pollType) {
         // If the user has refreshed the page, they may still have an answer
         // selected and the submit button should be enabled.
         self.verifyAll();
-    };
-
-
-    this.pollInit = function(){
-        // Initialization function for PollBlocks.
-        var selector = 'input[name=choice]:checked';
-        var radio = $(selector, element);
-        self.submit.click(function () {
-            // We can't just use radio.selector here because the selector
-            // is mangled if this is the first time this XBlock is added in
-            // studio.
-            radio = $(selector, element);
-            var choice = radio.val();
-            var thanks = $('.poll-voting-thanks', element);
-            thanks.addClass('poll-hidden');
-            // JQuery's fade functions set element-level styles. Clear these.
-            thanks.removeAttr('style');
-            $.ajax({
-                type: "POST",
-                url: self.voteUrl,
-                data: JSON.stringify({"choice": choice}),
-                success: self.onSubmit
-            });
-        });
-        // If the user has already reached their maximum submissions, all inputs should be disabled.
-        if (!$('div.poll-block', element).data('can-vote')) {
-            $('input', element).attr('disabled', true);
-        }
-        // If the user has refreshed the page, they may still have an answer
-        // selected and the submit button should be enabled.
-        var answers = $('input[type=radio]', element);
-        if (! radio.val()) {
-            answers.bind("change.enableSubmit", self.enableSubmit);
-        } else if ($('div.poll-block', element).data('can-vote')) {
-            self.enableSubmit();
-        }
-    };
-
-    this.surveyInit = function () {
-        // Initialization function for Survey Blocks
-
-        // If the user is unable to vote, disable input.
-        if (! $('div.poll-block', element).data('can-vote')) {
-            $('input', element).attr('disabled', true);
-            return
-        }
-        self.answers.bind("change.enableSubmit", self.verifyAll);
-        self.submit.click(function () {
-            $.ajax({
-                type: "POST",
-                url: self.voteUrl,
-                data: JSON.stringify(self.surveyChoices()),
-                success: self.onSubmit
-            })
-        });
-        // If the user has refreshed the page, they may still have an answer
-        // selected and the submit button should be enabled.
-        self.verifyAll();
-    };
-
-    this.surveyChoices = function () {
-        console.log("surveyChoices");
-        // Grabs all selections for survey answers, and returns a mapping for them.
-        var choices = {};
-        self.answers.each(function(index, el) {
-            el = $(el);
-            choices[el.prop('name')] = $(self.checkedElement(el), element).val();
-        });
-        return choices;
     };
 
     this.checkPollChoices = function () {
@@ -149,12 +79,6 @@ function PollUtil (runtime, element, pollType) {
         console.log("verify all");
         // Verify that all questions have an answer selected.
         var doEnable = true;
-        self.answers.each(function (index, el) {
-            if (! $(self.checkedElement($(el)), element).length) {
-                doEnable = false;
-                return false
-            }
-        });
 
         //seems that this function should be the same
         self.checkAnswers.each(function (index, el) {
@@ -222,7 +146,6 @@ function PollUtil (runtime, element, pollType) {
         console.log("enable submit");
         // Enable the submit button.
         self.submit.removeAttr("disabled");
-        self.answers.unbind("change.enableSubmit");  //need to add checkANSWES
         self.checkAnswers.unbind("change.enableSubmit");  //need to add checkANSWES
     };
 
