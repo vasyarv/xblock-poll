@@ -15,7 +15,7 @@ function PollUtil (runtime, element, pollType) {
         this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
         this.viewResultsButton = $('.view-results-button', element);
         this.viewResultsButton.click(this.getResults);
-        // If the submit button doesn't exist, the user has already
+        // If the submit button doesn't exist, the user has alread
         // selected a choice. Render results instead of initializing machinery.
         if (! self.submit.length) {
             self.onSubmit({'success': true});
