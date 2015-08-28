@@ -152,7 +152,13 @@ function PollUtil (runtime, element, pollType) {
 
         //seems that this function should be the same
         self.checkAnswers.each(function (index, el) {
-            if (! $(self.checkedElement($(el)), element).length) {
+            var temp = [];
+            if (el.checked) {
+                el = $(el);
+                temp.push(el.val()); //maybe element is needed
+            }
+
+            if (! temp.length) {
                 doEnable = false;
                 return false
             }
