@@ -7,9 +7,12 @@ function PollUtil (runtime, element, pollType) {
         // Initialization function used for both Poll Types
         this.voteUrl = runtime.handlerUrl(element, 'vote');
         this.tallyURL = runtime.handlerUrl(element, 'get_results');
+
         this.submit = $('input[type=button]', element);
         this.answers = $('input[type=radio]', element);
-        this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());
+
+        this.checkAnswers = $('input[type=checkbox]', element); //get the array of checkboxes
+        this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
         this.viewResultsButton = $('.view-results-button', element);
         this.viewResultsButton.click(this.getResults);
         // If the submit button doesn't exist, the user has already
@@ -25,6 +28,32 @@ function PollUtil (runtime, element, pollType) {
         }
         return true;
     };
+
+    this.checkPollInit = function(){
+        // Initialization function for Survey Blocks
+
+        // If the user is unable to vote, disable input.
+        if (! $('div.poll-block', element).data('can-vote')) {
+            $('input', element).attr('disabled', true);
+            return
+        }
+
+        self.answers.bind("change.enableSubmit", self.verifyAll);
+        self.checkAnswers.bind("change.enableSubmit", self.verifyAll);
+
+        self.submit.click(function () {
+            $.ajax({
+                type: "POST",
+                url: self.voteUrl,
+                data: JSON.stringify(self.checkPollChoices()),
+                success: self.onSubmit
+            })
+        });
+        // If the user has refreshed the page, they may still have an answer
+        // selected and the submit button should be enabled.
+        self.verifyAll();
+    };
+
 
     this.pollInit = function(){
         // Initialization function for PollBlocks.
@@ -93,6 +122,17 @@ function PollUtil (runtime, element, pollType) {
         return choices;
     };
 
+    this.checkPollChoices = function () {
+        var choices = [];
+        self.checkAnswers.each(function(index, el) {
+            if (el.checked) {
+                el = $(el);
+                choices.push(el.val()); //maybe element is needed
+            }
+        });
+        return choices;
+    };
+
     this.checkedElement = function (el) {
         // Given the DOM element of a radio, get the selector for the checked element
         // with the same name.
@@ -108,6 +148,15 @@ function PollUtil (runtime, element, pollType) {
                 return false
             }
         });
+
+        //seems that this function should be the same
+        self.checkAnswers.each(function (index, el) {
+            if (! $(self.checkedElement($(el)), element).length) {
+                doEnable = false;
+                return false
+            }
+        });
+
         if (doEnable){
             self.enableSubmit();
         }
@@ -157,15 +206,20 @@ function PollUtil (runtime, element, pollType) {
     this.enableSubmit = function () {
         // Enable the submit button.
         self.submit.removeAttr("disabled");
-        self.answers.unbind("change.enableSubmit");
+        self.answers.unbind("change.enableSubmit");  //need to add checkANSWES
+        self.checkAnswers.unbind("change.enableSubmit");  //need to add checkANSWES
     };
 
     var run_init = this.init();
     if (run_init) {
-        var init_map = {'poll': self.pollInit, 'survey': self.surveyInit};
+        var init_map = {'poll': self.pollInit, 'survey': self.surveyInit, 'checkpoll': self.checkPollInit()};
         init_map[pollType]()
     }
 
+}
+
+function CheckPollBlock(runtime, element) {
+    new PollUtil(runtime, element, 'checkpoll');
 }
 
 function PollBlock(runtime, element) {
