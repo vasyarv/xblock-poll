@@ -157,7 +157,8 @@ function PollUtil (runtime, element, pollType) {
         console.log("enable submit");
         // Enable the submit button.
         self.submit.removeAttr("disabled");
-        self.checkAnswers.unbind("change.enableSubmit");  //need to add checkANSWES
+        console.log("enable submit remove disabled");
+        self.checkAnswers.unbind("change.enableSubmit");  //HERE IS THE BUGGG
     };
 
     var run_init = this.init();
