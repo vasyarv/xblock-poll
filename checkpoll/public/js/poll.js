@@ -91,20 +91,22 @@ function PollUtil (runtime, element, pollType) {
         // Verify that all questions have an answer selected.
         var doEnable = true;
 
+        var temp = [];
         //seems that this function should be the same
         self.checkAnswers.each(function (index, el) {
-            var temp = [];
             if (el.checked) {
                 el = $(el);
                 temp.push(el.val()); //maybe element is needed
             }
-            console.log(temp);
 
-            if (! temp.length) {
-                doEnable = false;
-                return false
-            }
         });
+
+        console.log(JSON.stringify(temp));
+
+        if (! temp.length) {
+            doEnable = false;
+            return false
+        }
 
         console.log("Verify all is true");
         if (doEnable){
