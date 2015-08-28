@@ -20,7 +20,7 @@ function PollUtil (runtime, element, pollType) {
         console.log(element);
         console.log($("#" + pollType + "-results-template", element));
         console.log($("#" + pollType + "-results-template", element).html());
-        this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
+        //this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
         console.log("5");
         this.viewResultsButton = $('.view-results-button', element);
         console.log("6");
