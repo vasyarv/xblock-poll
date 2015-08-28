@@ -17,7 +17,7 @@ function PollUtil (runtime, element, pollType) {
         this.checkAnswers = $('input[type=checkbox]', element); //get the array of checkboxes
         console.log("4");
         console.log(pollType);
-        console.log($("#" + pollType + "-results-template", element).html());
+        console.log(element);
         this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
         console.log("5");
         this.viewResultsButton = $('.view-results-button', element);
