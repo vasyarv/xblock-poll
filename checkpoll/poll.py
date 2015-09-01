@@ -1042,11 +1042,14 @@ class CheckPollBlock(PollBase):
             result['errors'].append('Answer not included with request.')
             return result
         # Just to show data coming in...
+
+        """
         try:
             OrderedDict(self.answers)[choices]
         except KeyError:
             result['errors'].append('No key "{choices}" in answers table.'.format(choices=choices))
             return result
+        """
 
         if old_choices is None:
             # Reset submissions count if old choices is bogus.
