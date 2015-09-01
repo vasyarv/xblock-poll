@@ -24,7 +24,7 @@ function PollEditUtil(runtime, element, pollType) {
             runtime.notify('cancel', {});
         });
         console.log("5");
-        var button_mapping = self.mappings[Type]['buttons'];
+        var button_mapping = self.mappings[pollType]['buttons'];
         console.log("6");
         for (var key in button_mapping) {
         console.log("7");
