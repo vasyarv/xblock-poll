@@ -1059,13 +1059,14 @@ class CheckPollBlock(PollBase):
             result['errors'].append('You have already voted as many times as you are allowed.')
             return result
 
+
         self.clean_tally()
         if old_choices is not None:
             for key in old_choices:
                 self.tally[key] -= 1
         self.choices = choices
 
-        for key in old_choices:
+        for key in choices:
             self.tally[key] += 1
         self.submissions_count += 1
 
