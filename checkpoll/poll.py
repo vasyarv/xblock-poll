@@ -951,7 +951,7 @@ class CheckPollBlock(PollBase):
         if not context:
             context = {}
         js_template = self.resource_string(
-            '/public/handlebars/poll_results.handlebars')
+            '/public/handlebars/checkpoll_results.handlebars')
 
         choices = self.get_choices()
 

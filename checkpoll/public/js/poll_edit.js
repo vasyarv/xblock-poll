@@ -19,7 +19,7 @@ function PollEditUtil(runtime, element, pollType) {
         $(element).find('.cancel-button', element).bind('click', function() {
             runtime.notify('cancel', {});
         });
-        var button_mapping = self.mappings[pollType]['buttons'];
+        var button_mapping = self.mappings[Type]['buttons'];
         for (var key in button_mapping) {
             if (button_mapping.hasOwnProperty(key)) {
                 $(key, element).click(
