@@ -913,6 +913,8 @@ class CheckPollBlock(PollBase):
                 'any_img': any_img,
             })
             total += count
+        #total += 1
+
 
         for answer in tally:
             if answer['key'] in choices:
@@ -997,7 +999,7 @@ class CheckPollBlock(PollBase):
         })
         return self.create_fragment(
             context, "public/html/poll_edit.html",
-            "/public/css/poll_edit.css", "public/js/poll_edit.js", "PollEdit")
+            "/public/css/poll_edit.css", "public/js/poll_edit.js", "CheckPollEdit")
 
     @XBlock.json_handler
     def load_answers(self, data, suffix=''):
