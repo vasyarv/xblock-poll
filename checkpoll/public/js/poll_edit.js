@@ -31,10 +31,8 @@ function PollEditUtil(runtime, element, pollType) {
             if (button_mapping.hasOwnProperty(key)) {
         console.log("8");
                 $(key, element).click(
-        console.log("9");
                     // The nature of the closure forces us to make a custom function here.
                     function (context_key) {
-        console.log("10");
                         return function () {
                             // The degree of precision on date should be precise enough to avoid
                             // collisions in the real world.
