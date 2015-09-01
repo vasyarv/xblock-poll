@@ -18,6 +18,9 @@ function PollUtil (runtime, element, pollType) {
         console.log("4");
         console.log(pollType);
         console.log(element);
+        var a = $("#" + pollType + "-results-template", element);
+        console.log(a);
+        console.log(a.html());
         console.log($("#" + pollType + "-results-template", element));
         console.log($("#" + pollType + "-results-template", element).html());
         //this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
