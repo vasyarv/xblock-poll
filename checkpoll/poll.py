@@ -1035,7 +1035,8 @@ class CheckPollBlock(PollBase):
             result['errors'].append('You have already voted in this poll.')
             return result
         try:
-            choices = data['choices'][1:-1].split(",") #string to list
+            choices = data['choices']
+            #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
         except KeyError:
             result['errors'].append('Answer not included with request.')
