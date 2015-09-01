@@ -270,5 +270,6 @@ function SurveyEdit(runtime, element) {
 }
 
 function CheckPollEdit(runtime, element) {
+        console.log("1231231");
     new PollEditUtil(runtime, element, 'checkpoll');
 }
