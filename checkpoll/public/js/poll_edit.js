@@ -13,18 +13,28 @@ function PollEditUtil(runtime, element, pollType) {
 
     this.init = function () {
         // Set up the editing form for a Poll or Survey.
+        console.log("1");
         var temp = $('#poll-form-component', element).html();
+        console.log("2");
         self.answerTemplate = Handlebars.compile(temp);
+        console.log("3");
 
         $(element).find('.cancel-button', element).bind('click', function() {
+            console.log("4");
             runtime.notify('cancel', {});
         });
+        console.log("5");
         var button_mapping = self.mappings[Type]['buttons'];
+        console.log("6");
         for (var key in button_mapping) {
+        console.log("7");
             if (button_mapping.hasOwnProperty(key)) {
+        console.log("8");
                 $(key, element).click(
+        console.log("9");
                     // The nature of the closure forces us to make a custom function here.
                     function (context_key) {
+        console.log("10");
                         return function () {
                             // The degree of precision on date should be precise enough to avoid
                             // collisions in the real world.
