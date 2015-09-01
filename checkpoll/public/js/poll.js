@@ -174,7 +174,7 @@ function PollUtil (runtime, element, pollType) {
     var run_init = this.init();
     if (run_init) {
         console.log("run init");
-        var init_map = {'poll': self.pollInit, 'survey': self.surveyInit, 'checkpoll': self.checkPollInit()};
+        var init_map = {'poll': self.pollInit, 'survey': self.surveyInit, 'checkpoll': self.checkPollInit};
         init_map[pollType]()
     }
 
