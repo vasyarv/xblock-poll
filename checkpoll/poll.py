@@ -868,9 +868,10 @@ class CheckPollBlock(PollBase):
     tally = Dict(default={'R': 0, 'B': 0, 'G': 0, 'O': 0},
                  scope=Scope.user_state_summary,
                  help="Total tally of answers from students.")
-    choice = String(scope=Scope.user_state, help="The student's answer")
+    choices = List(scope=Scope.user_state, help="The student's answer")
     event_namespace = 'xblock.checkpoll'
 
+    #default copy - OK
     def clean_tally(self):
         """
         Cleans the tally. Scoping prevents us from modifying this in the studio
@@ -894,7 +895,7 @@ class CheckPollBlock(PollBase):
         """
         tally = []
         answers = OrderedDict(self.markdown_items(self.answers))
-        choice = self.get_choice()
+        choices = self.get_choices()
         total = 0
         self.clean_tally()
         source_tally = self.tally
@@ -907,15 +908,15 @@ class CheckPollBlock(PollBase):
                 'img': value['img'],
                 'key': key,
                 'first': False,
-                'choice': False,
+                'choices': False,
                 'last': False,
                 'any_img': any_img,
             })
             total += count
 
         for answer in tally:
-            if answer['key'] == choice:
-                answer['choice'] = True
+            if answer['key'] in choices:
+                answer['choices'] = True
             try:
                 answer['percent'] = round(answer['count'] / float(total) * 100)
             except ZeroDivisionError:
@@ -930,14 +931,15 @@ class CheckPollBlock(PollBase):
             tally[-1]['last'] = True
         return tally, total
 
-    def get_choice(self):
+    def get_choices(self):
         """
         It's possible for the choice to have been removed since
         the student answered the poll. We don't want to take away
         the user's progress, but they should be able to vote again.
         """
-        if self.choice and self.choice in OrderedDict(self.answers):
-            return self.choice
+        #check if choices and dict have intersection
+        if self.choices and len(set(self.choices).intersection(OrderedDict(self.answers))) > 0:
+            return self.choices
         else:
             return None
 
@@ -951,10 +953,10 @@ class CheckPollBlock(PollBase):
         js_template = self.resource_string(
             '/public/handlebars/poll_results.handlebars')
 
-        choice = self.get_choice()
+        choices = self.get_choices()
 
         context.update({
-            'choice': choice,
+            'choices': choices,
             # Offset so choices will always be True.
             'answers': self.markdown_items(self.answers),
             'question': markdown(self.question),
@@ -972,7 +974,7 @@ class CheckPollBlock(PollBase):
             'can_view_private_results': self.can_view_private_results(),
         })
 
-        if self.choice:
+        if self.choices:
             detail, total = self.tally_detail()
             context.update({'tally': detail, 'total': total, 'plural': total > 1})
 
@@ -1028,24 +1030,25 @@ class CheckPollBlock(PollBase):
         Sets the user's vote.
         """
         result = {'success': False, 'errors': []}
-        old_choice = self.get_choice()
-        if (old_choice is not None) and not self.private_results:
+        old_choices = self.get_choices()
+        if (old_choices is not None) and not self.private_results:
             result['errors'].append('You have already voted in this poll.')
             return result
         try:
-            choice = data['choice']
+            choices = data['choices'][1:-1].split(",") #string to list
+            #MODIFY THIS BLOCK!!!!
         except KeyError:
             result['errors'].append('Answer not included with request.')
             return result
         # Just to show data coming in...
         try:
-            OrderedDict(self.answers)[choice]
+            OrderedDict(self.answers)[choices]
         except KeyError:
-            result['errors'].append('No key "{choice}" in answers table.'.format(choice=choice))
+            result['errors'].append('No key "{choices}" in answers table.'.format(choices=choices))
             return result
 
-        if old_choice is None:
-            # Reset submissions count if old choice is bogus.
+        if old_choices is None:
+            # Reset submissions count if old choices is bogus.
             self.submissions_count = 0
 
         if not self.can_vote():
@@ -1053,10 +1056,13 @@ class CheckPollBlock(PollBase):
             return result
 
         self.clean_tally()
-        if old_choice is not None:
-            self.tally[old_choice] -= 1
-        self.choice = choice
-        self.tally[choice] += 1
+        if old_choices is not None:
+            for key in old_choices:
+                self.tally[key] -= 1
+        self.choices = choices
+
+        for key in old_choices:
+            self.tally[key] += 1
         self.submissions_count += 1
 
         result['success'] = True
@@ -1064,7 +1070,7 @@ class CheckPollBlock(PollBase):
         result['submissions_count'] = self.submissions_count
         result['max_submissions'] = self.max_submissions
 
-        self.send_vote_event({'choice': self.choice})
+        self.send_vote_event({'choices': self.choices})
 
         return result
 

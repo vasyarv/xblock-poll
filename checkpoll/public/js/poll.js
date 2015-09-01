@@ -61,7 +61,7 @@ function PollUtil (runtime, element, pollType) {
             $.ajax({
                 type: "POST",
                 url: self.voteUrl,
-                data: JSON.stringify(self.checkPollChoices()),
+                data: JSON.stringify({choices: self.checkPollChoices()}),
                 success: self.onSubmit
             })
         });
