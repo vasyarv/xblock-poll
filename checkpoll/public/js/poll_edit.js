@@ -153,6 +153,16 @@ function PollEditUtil(runtime, element, pollType) {
             'onLoad': [{'url': self.loadAnswers, 'function': self.displayAnswers}],
             'gather': [{'prefix': 'answer', 'field': 'answers'}]
         },
+        'checkpoll': {
+            'buttons': {
+                '#poll-add-answer': {
+                    'template': self.makeNew({'image': true, 'noun': 'answer'}),
+                    'topMarker': '#poll-answer-marker', 'bottomMarker': '#poll-answer-end-marker'
+                }
+            },
+            'onLoad': [{'url': self.loadAnswers, 'function': self.displayAnswers}],
+            'gather': [{'prefix': 'answer', 'field': 'answers'}]
+        },
         'survey': {
             'buttons': {
                 '#poll-add-answer': {
