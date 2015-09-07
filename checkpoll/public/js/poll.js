@@ -1,6 +1,6 @@
 /* Javascript for PollBlock. */
 
-function PollUtil (runtime, element, pollType) {
+function CheckPollUtil (runtime, element, pollType) {
     var self = this;
 
     this.init = function() {
@@ -81,6 +81,74 @@ function PollUtil (runtime, element, pollType) {
                 el = $(el);
                 choices.push(el.val()); //maybe element is needed
             }
+        });
+        return choices;
+    };
+
+
+        this.pollInit = function(){
+        // Initialization function for PollBlocks.
+        var selector = 'input[name=choice]:checked';
+        var radio = $(selector, element);
+        self.submit.click(function () {
+            // We can't just use radio.selector here because the selector
+            // is mangled if this is the first time this XBlock is added in
+            // studio.
+            radio = $(selector, element);
+            var choice = radio.val();
+            var thanks = $('.poll-voting-thanks', element);
+            thanks.addClass('poll-hidden');
+            // JQuery's fade functions set element-level styles. Clear these.
+            thanks.removeAttr('style');
+            $.ajax({
+                type: "POST",
+                url: self.voteUrl,
+                data: JSON.stringify({"choice": choice}),
+                success: self.onSubmit
+            });
+        });
+        // If the user has already reached their maximum submissions, all inputs should be disabled.
+        if (!$('div.poll-block', element).data('can-vote')) {
+            $('input', element).attr('disabled', true);
+        }
+        // If the user has refreshed the page, they may still have an answer
+        // selected and the submit button should be enabled.
+        var answers = $('input[type=radio]', element);
+        if (! radio.val()) {
+            answers.bind("change.enableSubmit", self.enableSubmit);
+        } else if ($('div.poll-block', element).data('can-vote')) {
+            self.enableSubmit();
+        }
+    };
+
+    this.surveyInit = function () {
+        // Initialization function for Survey Blocks
+
+        // If the user is unable to vote, disable input.
+        if (! $('div.poll-block', element).data('can-vote')) {
+            $('input', element).attr('disabled', true);
+            return
+        }
+        self.answers.bind("change.enableSubmit", self.verifyAll);
+        self.submit.click(function () {
+            $.ajax({
+                type: "POST",
+                url: self.voteUrl,
+                data: JSON.stringify(self.surveyChoices()),
+                success: self.onSubmit
+            })
+        });
+        // If the user has refreshed the page, they may still have an answer
+        // selected and the submit button should be enabled.
+        self.verifyAll();
+    };
+
+    this.surveyChoices = function () {
+        // Grabs all selections for survey answers, and returns a mapping for them.
+        var choices = {};
+        self.answers.each(function(index, el) {
+            el = $(el);
+            choices[el.prop('name')] = $(self.checkedElement(el), element).val();
         });
         return choices;
     };
@@ -174,6 +242,7 @@ function PollUtil (runtime, element, pollType) {
     var run_init = this.init();
     if (run_init) {
         console.log("run init");
+        console.log(pollType);
         var init_map = {'poll': self.pollInit, 'survey': self.surveyInit, 'checkpoll': self.checkPollInit};
         init_map[pollType]()
     }
@@ -181,7 +250,7 @@ function PollUtil (runtime, element, pollType) {
 }
 
 function CheckPollBlock(runtime, element) {
-    new PollUtil(runtime, element, 'checkpoll');
+    new CheckPollUtil(runtime, element, 'checkpoll');
 }
 
 function PollBlock(runtime, element) {

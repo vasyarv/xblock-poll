@@ -912,8 +912,8 @@ class CheckPollBlock(PollBase):
                 'last': False,
                 'any_img': any_img,
             })
-            total += count
-        #total += 1
+            #total += count
+        total += 1
 
 
         for answer in tally:
