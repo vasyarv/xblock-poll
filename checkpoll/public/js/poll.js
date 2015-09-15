@@ -7,43 +7,26 @@ function CheckPollUtil (runtime, element, pollType) {
         console.log("this init");
         // Initialization function used for both Poll Types
         this.voteUrl = runtime.handlerUrl(element, 'vote');
-        console.log("1");
         this.tallyURL = runtime.handlerUrl(element, 'get_results');
-        console.log("2");
-
         this.submit = $('input[type=button]', element);
-        console.log("3");
-
         this.checkAnswers = $('input[type=checkbox]', element); //get the array of checkboxes
-        console.log("4");
-        console.log(pollType);
-        console.log(element);
         var a = $("#" + pollType + "-results-template", element);
-        console.log(a);
-        console.log(a.html());
-        console.log($("#" + pollType + "-results-template", element));
-        console.log($("#" + pollType + "-results-template", element).html());
         this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
-        console.log("5");
         this.viewResultsButton = $('.view-results-button', element);
-        console.log("6");
         this.viewResultsButton.click(this.getResults);
-        console.log("7");
         // If the submit button doesn't exist, the user has alread
         // selected a choice. Render results instead of initializing machinery.
-        if (! self.submit.length) {
+        var max_submissions = parseInt($('.poll-max-submissions', element).text());
+        var current_count = parseInt($('.poll-current-count', element).text());
+
+        if (max_submissions == current_count) {
             self.onSubmit({'success': true});
             return false;
+
         }
-        console.log("8");
-        var max_submissions = parseInt($('.poll-max-submissions', element).text());
-        console.log("9");
-        var current_count = parseInt($('.poll-current-count', element).text());
-        console.log("10");
         if (max_submissions > 1 && current_count > 0) {
             $('.poll-submissions-count', element).show();
         }
-        console.log("11");
         return true;
     };
 
@@ -86,7 +69,7 @@ function CheckPollUtil (runtime, element, pollType) {
     };
 
 
-        this.pollInit = function(){
+    this.pollInit = function(){
         // Initialization function for PollBlocks.
         var selector = 'input[name=choice]:checked';
         var radio = $(selector, element);
