@@ -42,7 +42,7 @@ def package_data(pkg, roots):
     return {pkg: data}
 
 setup(
-    name='xblock-checkpoll',
+    name='xblock-poll',
     version='0.2',
     description='An XBlock for polling users.',
     packages=[
