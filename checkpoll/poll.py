@@ -24,6 +24,7 @@
 from collections import OrderedDict
 
 from django.template import Template, Context
+from django.contrib.auth.models import User
 from markdown import markdown
 
 import pkg_resources
@@ -39,7 +40,7 @@ try:
     # pylint: disable=import-error
     from django.conf import settings
     from courseware.access import has_access
-    from api_manager.models import GroupProfile
+    #from api_manager.models import GroupProfile
     HAS_EDX_ACCESS = True
 except ImportError:
     pass
@@ -181,9 +182,11 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
         Checks to see if the user has permissions to view private results.
         This only works inside the LMS.
         """
-        if HAS_EDX_ACCESS and hasattr(self.runtime, 'user') and hasattr(self.runtime, 'course_id'):
+        if HAS_EDX_ACCESS and hasattr(self.runtime, 'user_id') and hasattr(self.runtime, 'course_id'):
             # Course staff users have permission to view results.
-            if has_access(self.runtime.user, 'staff', self, self.runtime.course_id):
+            user_id = int(long(self.runtime.user_id))
+            user = User.objects.get(id = user_id)
+            if has_access(user, 'staff', self, self.runtime.course_id):
                 return True
             else:
                 # Check if user is member of a group that is explicitly granted
@@ -849,6 +852,7 @@ class SurveyBlock(PollBase):
         ]
 
 
+
 class CheckPollBlock(PollBase):
     """
     Poll XBlock. Allows a teacher to poll users, and presents the results so
@@ -868,6 +872,10 @@ class CheckPollBlock(PollBase):
     tally = Dict(default={'R': 0, 'B': 0, 'G': 0, 'O': 0},
                  scope=Scope.user_state_summary,
                  help="Total tally of answers from students.")
+
+    detailed_tally = List(scope=Scope.user_state_summary,
+                 help="Total tally of answers from students with detailes.")
+
     choices = List(scope=Scope.user_state, help="The student's answer")
     event_namespace = 'xblock.checkpoll'
 
@@ -912,8 +920,9 @@ class CheckPollBlock(PollBase):
                 'last': False,
                 'any_img': any_img,
             })
+
+        total = len(self.detailed_tally)
             #total += count
-        total += 1
 
 
         for answer in tally:
@@ -957,6 +966,7 @@ class CheckPollBlock(PollBase):
 
         choices = self.get_choices()
 
+
         context.update({
             'choices': choices,
             # Offset so choices will always be True.
@@ -975,6 +985,8 @@ class CheckPollBlock(PollBase):
             'submissions_count': self.submissions_count,
             'can_view_private_results': self.can_view_private_results(),
         })
+
+        #import rpdb; rpdb.set_trace()
 
         if self.choices:
             detail, total = self.tally_detail()
@@ -1023,7 +1035,17 @@ class CheckPollBlock(PollBase):
         return {
             'question': markdown(self.question), 'tally': detail,
             'total': total, 'feedback': markdown(self.feedback),
-            'plural': total > 1, 'display_name': self.display_name,
+            'plural': total > 1, 'display_name': self.display_name,'can_view_private_results': self.can_view_private_results(),
+        }
+
+    @XBlock.json_handler
+    def download_results(self, data, suffix=''):
+        course_info = str(self.runtime.course_id)
+        return {
+            'question': self.question,
+            'answers': self.answers,
+            'course_info': course_info,
+            'detailed_tally': self.detailed_tally
         }
 
     @XBlock.json_handler
@@ -1031,11 +1053,17 @@ class CheckPollBlock(PollBase):
         """
         Sets the user's vote.
         """
+        #debug
+        #import rpdb; rpdb.set_trace()
+        #self.runtime
+
         result = {'success': False, 'errors': []}
+
         old_choices = self.get_choices()
         if (old_choices is not None) and not self.private_results:
             result['errors'].append('You have already voted in this poll.')
             return result
+
         try:
             choices = data['choices']
             #choices = data['choices'][1:-1].split(",") #string to list
@@ -1043,15 +1071,18 @@ class CheckPollBlock(PollBase):
         except KeyError:
             result['errors'].append('Answer not included with request.')
             return result
-        # Just to show data coming in...
 
-        """
         try:
-            OrderedDict(self.answers)[choices]
+            username = data['username']
+            #choices = data['choices'][1:-1].split(",") #string to list
+            #MODIFY THIS BLOCK!!!!
         except KeyError:
-            result['errors'].append('No key "{choices}" in answers table.'.format(choices=choices))
+            result['errors'].append('Username not included with request.')
             return result
-        """
+
+
+
+        user_id = int(long(self.runtime.user_id))
 
         if old_choices is None:
             # Reset submissions count if old choices is bogus.
@@ -1060,6 +1091,16 @@ class CheckPollBlock(PollBase):
         if not self.can_vote():
             result['errors'].append('You have already voted as many times as you are allowed.')
             return result
+
+        #we have username and need to include it in choices
+        #self.detailed_tally[username] = choices
+        tally_record = {
+            'username' : username,
+            'user_id': user_id,
+            'choices': choices
+        }
+        self.detailed_tally.append(tally_record)
+
 
 
         self.clean_tally()

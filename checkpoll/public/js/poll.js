@@ -1,4 +1,9 @@
 /* Javascript for PollBlock. */
+function getCookie(name) {
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
+}
 
 function CheckPollUtil (runtime, element, pollType) {
     var self = this;
@@ -8,12 +13,21 @@ function CheckPollUtil (runtime, element, pollType) {
         // Initialization function used for both Poll Types
         this.voteUrl = runtime.handlerUrl(element, 'vote');
         this.tallyURL = runtime.handlerUrl(element, 'get_results');
+        this.downloadUrl = runtime.handlerUrl(element, 'download_results');
+        console.log(this.downloadUrl);
+
         this.submit = $('input[type=button]', element);
         this.checkAnswers = $('input[type=checkbox]', element); //get the array of checkboxes
         var a = $("#" + pollType + "-results-template", element);
         this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
+
         this.viewResultsButton = $('.view-results-button', element);
         this.viewResultsButton.click(this.getResults);
+
+
+
+        console.log(this.downloadResultsButton);
+        console.log(this.viewResultsButton);
         // If the submit button doesn't exist, the user has alread
         // selected a choice. Render results instead of initializing machinery.
         var max_submissions = parseInt($('.poll-max-submissions', element).text());
@@ -47,7 +61,7 @@ function CheckPollUtil (runtime, element, pollType) {
             $.ajax({
                 type: "POST",
                 url: self.voteUrl,
-                data: JSON.stringify({choices: self.checkPollChoices()}),
+                data: JSON.stringify({choices: self.checkPollChoices(), username: self.getUserName()}),
                 success: self.onSubmit
             })
         });
@@ -55,6 +69,16 @@ function CheckPollUtil (runtime, element, pollType) {
         // selected and the submit button should be enabled.
         self.verifyAll();
     };
+
+    this.getUserName = function () {
+        var edxInfo = getCookie("edx-user-info").replace(/\\054/g, ',').replace(/\\"/g, '"');
+        if (edxInfo.charAt(0) == '"')
+            edxInfo = edxInfo.substring(1);
+        if (edxInfo.charAt(edxInfo.length-1) == '"')
+            edxInfo = edxInfo.substring(0,edxInfo.length-1);
+        var username = JSON.parse(edxInfo).username;
+        return username;
+    }
 
     this.checkPollChoices = function () {
         console.log("checkpollChoices");
@@ -210,9 +234,78 @@ function CheckPollUtil (runtime, element, pollType) {
             data: JSON.stringify({}),
             success: function (data) {
                 $('div.poll-block', element).html(self.resultsTemplate(data));
+                this.downloadResultsButton = $('.download-results-button', element);
+                //this.downloadResultsButton.click(this.downloadResults);
+                //this.downloadResultsButton.on( "click", this.downloadResults);
+                $('div.poll-block', element).on('click', 'a.download-results-button', function() {
+                    self.downloadResults();
+                });
+
+            }
+        })
+
+    };
+
+    this.downloadFile = function(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    this.checkPollToCsv = function (data) {
+        var csvFile = "course_info,question,username,user_id";
+        var shortAnswers = [];
+        for (var i = 0 ; i < data['answers'].length ; i++) {
+            csvFile += "," + data['answers'][i][1]['label'];
+            shortAnswers.push(data['answers'][i][0]);
+        }
+        csvFile += "\n";
+
+        var course_info = data['course_info'];
+        var question = data['question'];
+        var question = data['question'];
+
+        for (var i = 0; i < data['detailed_tally'].length; i++){
+            csvFile += course_info + "," + question + ",";
+            csvFile +=  data['detailed_tally'][i]['username'] + "," + data['detailed_tally'][i]['user_id'];
+            for (var j = 0; j < shortAnswers.length; j++) {
+                if (data['detailed_tally'][i]['choices'].indexOf(shortAnswers[j]) != -1) {
+                    csvFile += ",+";
+                } else {
+                    csvFile += ",-";
+                }
+            }
+
+
+            csvFile += "\n";
+        }
+        return csvFile;
+    }
+
+    this.downloadResults = function () {
+        console.log("dwnload rsults");
+        // Used if results are not private, to show the user how other students voted.
+        $.ajax({
+            // Semantically, this would be better as GET, but we can use helper
+            // functions with POST.
+            type: "POST",
+            url: self.downloadUrl,
+            data: JSON.stringify({}),
+            success: function (data) {
+                console.log(data);
+                console.log(self.checkPollToCsv(data));
+                self.downloadFile(data['course_info']+'.csv', self.checkPollToCsv(data));
             }
         })
     };
+
 
     this.enableSubmit = function () {
         console.log("enable submit");
