@@ -18,10 +18,10 @@ function CheckPollUtil (runtime, element, pollType) {
 
         this.submit = $('input[type=button]', element);
 
+
         this.answers = $('input[type=radio]', element);
 
         this.checkAnswers = $('input[type=checkbox]', element); //get the array of checkboxes
-        var a = $("#" + pollType + "-results-template", element);
         this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
 
         this.viewResultsButton = $('.view-results-button', element);
@@ -41,6 +41,13 @@ function CheckPollUtil (runtime, element, pollType) {
             return false;
 
         }
+        if (pollType != "checkpoll") {
+            if (! self.submit.length) {
+                self.onSubmit({'success': true});
+                return false;
+            }
+        }
+
         if (max_submissions > 1 && current_count > 0) {
             $('.poll-submissions-count', element).show();
         }
