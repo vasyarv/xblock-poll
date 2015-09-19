@@ -368,6 +368,7 @@ class PollBlock(PollBase):
             'feedback': self.feedback,
             'js_template': js_template,
             'max_submissions': self.max_submissions,
+            'can_view_private_results': self.can_view_private_results(),
         })
         return self.create_fragment(
             context, "public/html/poll_edit.html",
@@ -407,6 +408,7 @@ class PollBlock(PollBase):
             'question': markdown(self.question), 'tally': detail,
             'total': total, 'feedback': markdown(self.feedback),
             'plural': total > 1, 'display_name': self.display_name,
+            'can_view_private_results': self.can_view_private_results(),
         }
 
     @XBlock.json_handler
