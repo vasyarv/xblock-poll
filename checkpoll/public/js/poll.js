@@ -342,9 +342,9 @@ function CheckPollBlock(runtime, element) {
 }
 
 function PollBlock(runtime, element) {
-    new PollUtil(runtime, element, 'poll');
+    new CheckPollUtil(runtime, element, 'poll');
 }
 
 function SurveyBlock(runtime, element) {
-    new PollUtil(runtime, element, 'survey');
+    new CheckPollUtil(runtime, element, 'survey');
 }
