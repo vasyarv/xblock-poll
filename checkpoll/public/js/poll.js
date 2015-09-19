@@ -175,28 +175,30 @@ function CheckPollUtil (runtime, element, pollType) {
         // Verify that all questions have an answer selected.
         var doEnable = true;
 
-        var temp = [];
-        //seems that this function should be the same
-        self.checkAnswers.each(function (index, el) {
-            if (el.checked) {
-                el = $(el);
-                temp.push(el.val()); //maybe element is needed
-            }
+        if (pollType == "checkpoll") {
+            var temp = [];
+            //seems that this function should be the same
+            self.checkAnswers.each(function (index, el) {
+                if (el.checked) {
+                    el = $(el);
+                    temp.push(el.val()); //maybe element is needed
+                }
 
-        });
+            });
 
-        self.answers.each(function (index, el) {
-            if (! $(self.checkedElement($(el)), element).length) {
+            console.log(JSON.stringify(temp));
+
+            if (! temp.length) {
                 doEnable = false;
                 return false
             }
-        });
-
-        console.log(JSON.stringify(temp));
-
-        if (! temp.length) {
-            doEnable = false;
-            return false
+        } else {
+            self.answers.each(function (index, el) {
+                if (!$(self.checkedElement($(el)), element).length) {
+                    doEnable = false;
+                    return false
+                }
+            });
         }
 
         console.log("Verify all is true");
