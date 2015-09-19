@@ -27,6 +27,16 @@
     </table>
     <input class="input-main" type="button" name="poll-submit" value="Submit" disabled>
     <div class="poll-footnote">Results gathered from {{total}} respondent{{#if plural}}s{{/if}}.</div>
+    {{#if can_view_private_results}}
+    <div style="float: right;
+    margin-left: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.05);
+    text-align: right;
+    text-transform: uppercase;
+    color: #646464;" class="view-results-button-wrapper"><a style="color: black;" class="download-results-button">Download results</a></div>
+    {{/if}}
     {{#if feedback}}
         <hr />
         <h3 class="poll-header">Feedback</h3>

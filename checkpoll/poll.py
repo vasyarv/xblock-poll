@@ -238,6 +238,12 @@ class PollBlock(PollBase):
     tally = Dict(default={'R': 0, 'B': 0, 'G': 0, 'O': 0},
                  scope=Scope.user_state_summary,
                  help="Total tally of answers from students.")
+
+
+    detailed_tally = List(scope=Scope.user_state_summary,
+                 help="Total tally of answers from students with detailes.")
+
+
     choice = String(scope=Scope.user_state, help="The student's answer")
     event_namespace = 'xblock.poll'
 
@@ -368,6 +374,17 @@ class PollBlock(PollBase):
             "/public/css/poll_edit.css", "public/js/poll_edit.js", "PollEdit")
 
     @XBlock.json_handler
+    def download_results(self, data, suffix=''):
+        course_info = str(self.runtime.course_id)
+        return {
+            'question': self.question,
+            'answers': self.answers,
+            'course_info': course_info,
+            'detailed_tally': self.detailed_tally
+        }
+
+
+    @XBlock.json_handler
     def load_answers(self, data, suffix=''):
         return {
             'items': [
@@ -428,6 +445,29 @@ class PollBlock(PollBase):
         self.choice = choice
         self.tally[choice] += 1
         self.submissions_count += 1
+
+
+
+        user_id = int(long(self.runtime.user_id))
+
+        try:
+            username = data['username']
+            #choices = data['choices'][1:-1].split(",") #string to list
+            #MODIFY THIS BLOCK!!!!
+        except KeyError:
+            result['errors'].append('Username not included with request.')
+            return result
+
+        #we have username and need to include it in choices
+        #self.detailed_tally[username] = choices
+        tally_record = {
+            'username' : username,
+            'user_id': user_id,
+            'choice': choice #choice!!!
+        }
+        self.detailed_tally.append(tally_record)
+
+
 
         result['success'] = True
         result['can_vote'] = self.can_vote()
@@ -520,6 +560,12 @@ class SurveyBlock(PollBase):
         scope=Scope.user_state_summary,
         help="Total tally of answers from students."
     )
+
+
+    detailed_tally = List(scope=Scope.user_state_summary,
+                 help="Total tally of answers from students with detailes.")
+
+
     choices = Dict(help="The user's answers", scope=Scope.user_state)
     event_namespace = 'xblock.survey'
 

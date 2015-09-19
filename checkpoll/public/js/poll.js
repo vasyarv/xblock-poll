@@ -280,7 +280,7 @@ function CheckPollUtil (runtime, element, pollType) {
     this.checkPollToCsv = function (data) {
         var csvFile = "course_info,question,username,user_id";
         var shortAnswers = [];
-        for (var i = 0 ; i < data['answers'].length ; i++) {
+        for (var i = 0; i < data['answers'].length; i++) {
             csvFile += "," + data['answers'][i][1]['label'];
             shortAnswers.push(data['answers'][i][0]);
         }
@@ -290,18 +290,27 @@ function CheckPollUtil (runtime, element, pollType) {
         var question = data['question'];
         var question = data['question'];
 
-        for (var i = 0; i < data['detailed_tally'].length; i++){
+        for (var i = 0; i < data['detailed_tally'].length; i++) {
             csvFile += course_info + "," + question + ",";
-            csvFile +=  data['detailed_tally'][i]['username'] + "," + data['detailed_tally'][i]['user_id'];
-            for (var j = 0; j < shortAnswers.length; j++) {
-                if (data['detailed_tally'][i]['choices'].indexOf(shortAnswers[j]) != -1) {
-                    csvFile += ",+";
-                } else {
-                    csvFile += ",-";
+            csvFile += data['detailed_tally'][i]['username'] + "," + data['detailed_tally'][i]['user_id'];
+
+            if (pollType == "checkpoll") {
+                for (var j = 0; j < shortAnswers.length; j++) {
+                    if (data['detailed_tally'][i]['choices'].indexOf(shortAnswers[j]) != -1) {
+                        csvFile += ",+";
+                    } else {
+                        csvFile += ",-";
+                    }
+                }
+            } else if (pollType == "poll"){
+                for (var j = 0; j < shortAnswers.length; j++) {
+                    if (data['detailed_tally'][i]['choice'] == shortAnswers[j]) {
+                        csvFile += ",+";
+                    } else {
+                        csvFile += ",-";
+                    }
                 }
             }
-
-
             csvFile += "\n";
         }
         return csvFile;
