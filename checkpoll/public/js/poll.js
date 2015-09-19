@@ -17,6 +17,9 @@ function CheckPollUtil (runtime, element, pollType) {
         console.log(this.downloadUrl);
 
         this.submit = $('input[type=button]', element);
+
+        this.answers = $('input[type=radio]', element);
+
         this.checkAnswers = $('input[type=checkbox]', element); //get the array of checkboxes
         var a = $("#" + pollType + "-results-template", element);
         this.resultsTemplate = Handlebars.compile($("#" + pollType + "-results-template", element).html());  //modify handlebar!!
@@ -182,6 +185,13 @@ function CheckPollUtil (runtime, element, pollType) {
 
         });
 
+        self.answers.each(function (index, el) {
+            if (! $(self.checkedElement($(el)), element).length) {
+                doEnable = false;
+                return false
+            }
+        });
+
         console.log(JSON.stringify(temp));
 
         if (! temp.length) {
@@ -243,7 +253,6 @@ function CheckPollUtil (runtime, element, pollType) {
 
             }
         })
-
     };
 
     this.downloadFile = function(filename, text) {
@@ -313,6 +322,7 @@ function CheckPollUtil (runtime, element, pollType) {
         self.submit.removeAttr("disabled");
         console.log("enable submit remove disabled");
         self.checkAnswers.unbind("change.enableSubmit");  //HERE IS THE BUGGG
+        self.answers.unbind("change.enableSubmit");
     };
 
     var run_init = this.init();
