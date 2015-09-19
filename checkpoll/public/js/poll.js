@@ -120,7 +120,7 @@ function CheckPollUtil (runtime, element, pollType) {
             $.ajax({
                 type: "POST",
                 url: self.voteUrl,
-                data: JSON.stringify({"choice": choice}),
+                data: JSON.stringify({"choice": choice,  username: self.getUserName()}),}),
                 success: self.onSubmit
             });
         });
