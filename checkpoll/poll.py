@@ -450,7 +450,8 @@ class PollBlock(PollBase):
 
 
 
-        user_id = int(long(self.runtime.user_id))
+        #user_id = int(long(self.runtime.user_id))
+        user_id = 5
 
         try:
             username = data['username']
@@ -1130,7 +1131,8 @@ class CheckPollBlock(PollBase):
 
 
 
-        user_id = int(long(self.runtime.user_id))
+        #user_id = int(long(self.runtime.user_id))
+        user_id = 5
 
         if old_choices is None:
             # Reset submissions count if old choices is bogus.
