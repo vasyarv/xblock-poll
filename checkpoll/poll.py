@@ -125,6 +125,8 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
         else:
             source_items = data[field]
 
+
+
         # Make sure all components are present and clean them.
         for item in source_items:
             if not isinstance(item, dict):
@@ -161,6 +163,7 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
                 items.append([key, label])
 
         if not items:
+            import rpdb; rpdb.set_trace()
             result['errors'].append(
                 u"Вы должны включить хотя бы один {0}.".format(noun.lower()))
             result['success'] = False
