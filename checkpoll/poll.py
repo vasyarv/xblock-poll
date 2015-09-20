@@ -234,7 +234,7 @@ class PollBlock(PollBase):
     """
     # pylint: disable=too-many-instance-attributes
 
-    display_name = String(default=u'Опрос')
+    display_name = String(default=u'Опрос с множественным выбором')
     question = String(default=u'Ваш любимый цвет?')
     # This will be converted into an OrderedDict.
     # Key, (Label, Image path)
