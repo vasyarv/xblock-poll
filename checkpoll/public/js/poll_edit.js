@@ -201,6 +201,7 @@ function PollEditUtil(runtime, element, pollType) {
             name = name.replace('label-', '');
         }
         if (! (scope.name.indexOf(prefix + '-') >= 0)) {
+            console.log("bad");
             return
         }
         if (tracker.indexOf(name) == -1) {
