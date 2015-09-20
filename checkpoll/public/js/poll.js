@@ -264,7 +264,7 @@ function CheckPollUtil (runtime, element, pollType) {
     }
 
     this.checkPollToCsv = function (data) {
-        var csvFile = "course_info,question,username,user_id";
+        var csvFile = "информация о курсе,вопрос,имя пользователя,id пользователя";
         var shortAnswers = [];
         for (var i = 0; i < data['answers'].length; i++) {
             csvFile += "," + data['answers'][i][1]['label'];
