@@ -402,7 +402,7 @@ class PollBlock(PollBase):
             'items': [
                 {
                     'key': key, 'text': value['label'], 'img': value['img'],
-                    'noun': u'ответ', 'image': True,
+                    'noun': u'answer', 'image': True,
                     }
                 for key, value in self.answers
             ],
@@ -1079,7 +1079,7 @@ class CheckPollBlock(PollBase):
             'items': [
                 {
                     'key': key, 'text': value['label'], 'img': value['img'],
-                    'noun': u'ответ', 'image': True,
+                    'noun': u'answer', 'image': True,
                     }
                 for key, value in self.answers
             ],
