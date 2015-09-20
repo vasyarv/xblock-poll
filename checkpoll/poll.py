@@ -73,12 +73,12 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
     Base class for Poll-like XBlocks.
     """
     event_namespace = 'xblock.pollbase'
-    private_results = Boolean(default=False, help="Whether or not to display results to the user.")
-    max_submissions = Integer(default=1, help="The maximum number of times a user may send a submission.")
+    private_results = Boolean(default=False, help="Отображать ли результаты пользователю.")
+    max_submissions = Integer(default=1, help="Максимальное число попыток.")
     submissions_count = Integer(
-        default=0, help="Number of times the user has sent a submission.", scope=Scope.user_state
+        default=0, help="Количество использованных попыток.", scope=Scope.user_state
     )
-    feedback = String(default='', help="Text to display after the user votes.")
+    feedback = String(default='', help="Текст, который отображается пользователю после голосования.")
 
     def send_vote_event(self, choice_data):
         # Let the LMS know the user has answered the poll.
@@ -121,7 +121,7 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
             source_items = []
             result['success'] = False
             result['errors'].append(
-                "'{0}' is not present, or not a JSON array.".format(field))
+                "'{0}' не представлен или не является JSON массивом.".format(field))
         else:
             source_items = data[field]
 
@@ -130,30 +130,30 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
             if not isinstance(item, dict):
                 result['success'] = False
                 result['errors'].append(
-                    "{0} {1} not a javascript object!".format(noun, item))
+                    "{0} {1} не являтеся javascript объектом!".format(noun, item))
                 continue
             key = item.get('key', '').strip()
             if not key:
                 result['success'] = False
                 result['errors'].append(
-                    "{0} {1} contains no key.".format(noun, item))
+                    "{0} {1} не содержит ключей.".format(noun, item))
             image_link = item.get('img', '').strip()
             label = item.get('label', '').strip()
             if not label:
                 if image and not image_link:
                     result['success'] = False
                     result['errors'].append(
-                        "{0} has no text or img. Please make sure all {1}s "
-                        "have one or the other, or both.".format(noun, noun.lower()))
+                        "{0} не содержит ни текста ни изображения. Пожалуйста убедитесь, что все {1}ы "
+                        "сожержат либо текст, либо изображение, либо и то и другое.".format(noun, noun.lower()))
                 elif not image:
                     result['success'] = False
                     # If there's a bug in the code or the user just forgot to relabel a question,
                     # votes could be accidentally lost if we assume the omission was an
                     # intended deletion.
-                    result['errors'].append("{0} was added with no label. "
-                                            "All {1}s must have labels. Please check the form. "
-                                            "Check the form and explicitly delete {1}s "
-                                            "if not needed.".format(noun, noun.lower()))
+                    result['errors'].append("{0} добавлен без метки. "
+                                            "Все {1}ы должны содеожать метки. Пожалуйста, проверьте форму. "
+                                            "Проверьте форму и удалите {1}ы "
+                                            "при необходимости.".format(noun, noun.lower()))
             if image:
                 # Labels might have prefixed space for markdown, though it's unlikely.
                 items.append((key, {'label': label, 'img': image_link.strip()}))
@@ -162,7 +162,7 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
 
         if not items:
             result['errors'].append(
-                "You must include at least one {0}.".format(noun.lower()))
+                "Вы должны включить хотя бы один {0}.".format(noun.lower()))
             result['success'] = False
 
         return items
@@ -210,12 +210,12 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
         except (ValueError, KeyError):
             max_submissions = 1
             result['success'] = False
-            result['errors'].append('Maximum Submissions missing or not an integer.')
+            result['errors'].append('Максимальное число попыток отсутствует или не является целым числом.')
 
         # Better to send an error than to confuse the user by thinking this would work.
         if (max_submissions != 1) and not private_results:
             result['success'] = False
-            result['errors'].append("Private results may not be False when Maximum Submissions is not 1.")
+            result['errors'].append("Приватные результаты доступны только если число максимальных попыток не равно 1.")
         return max_submissions
 
 
@@ -227,24 +227,24 @@ class PollBlock(PollBase):
     # pylint: disable=too-many-instance-attributes
 
     display_name = String(default='Poll')
-    question = String(default='What is your favorite color?')
+    question = String(default='Ваш любимый цвет?')
     # This will be converted into an OrderedDict.
     # Key, (Label, Image path)
     answers = List(
-        default=(('R', {'label': 'Red', 'img': None}), ('B', {'label': 'Blue', 'img': None}),
-                 ('G', {'label': 'Green', 'img': None}), ('O', {'label': 'Other', 'img': None})),
-        scope=Scope.settings, help="The answer options on this poll."
+        default=(('R', {'label': 'Красный', 'img': None}), ('B', {'label': 'Голубой', 'img': None}),
+                 ('G', {'label': 'Зеленый', 'img': None}), ('O', {'label': 'Другой', 'img': None})),
+        scope=Scope.settings, help="Варианты ответов."
     )
     tally = Dict(default={'R': 0, 'B': 0, 'G': 0, 'O': 0},
                  scope=Scope.user_state_summary,
-                 help="Total tally of answers from students.")
+                 help="Статистика ответов.")
 
 
     detailed_tally = List(scope=Scope.user_state_summary,
-                 help="Total tally of answers from students with detailes.")
+                 help="Детальная статистика ответов.")
 
 
-    choice = String(scope=Scope.user_state, help="The student's answer")
+    choice = String(scope=Scope.user_state, help="Ответ студента.")
     event_namespace = 'xblock.poll'
 
     def clean_tally(self):
@@ -391,7 +391,7 @@ class PollBlock(PollBase):
             'items': [
                 {
                     'key': key, 'text': value['label'], 'img': value['img'],
-                    'noun': 'answer', 'image': True,
+                    'noun': 'ответ', 'image': True,
                     }
                 for key, value in self.answers
             ],
@@ -419,18 +419,18 @@ class PollBlock(PollBase):
         result = {'success': False, 'errors': []}
         old_choice = self.get_choice()
         if (old_choice is not None) and not self.private_results:
-            result['errors'].append('You have already voted in this poll.')
+            result['errors'].append('Вы уже проголосовали в этом опросе.')
             return result
         try:
             choice = data['choice']
         except KeyError:
-            result['errors'].append('Answer not included with request.')
+            result['errors'].append('Ответ не включен в запрос.')
             return result
         # Just to show data coming in...
         try:
             OrderedDict(self.answers)[choice]
         except KeyError:
-            result['errors'].append('No key "{choice}" in answers table.'.format(choice=choice))
+            result['errors'].append('Ключ "{choice}" не найден в таблице ответов.'.format(choice=choice))
             return result
 
         if old_choice is None:
@@ -438,7 +438,7 @@ class PollBlock(PollBase):
             self.submissions_count = 0
 
         if not self.can_vote():
-            result['errors'].append('You have already voted as many times as you are allowed.')
+            result['errors'].append('Вы уже проголосвали максимально допустимое число раз.')
             return result
 
         self.clean_tally()
@@ -457,7 +457,7 @@ class PollBlock(PollBase):
             #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
         except KeyError:
-            result['errors'].append('Username not included with request.')
+            result['errors'].append('Имя пользователя не включено в запрос.')
             return result
 
         #we have username and need to include it in choices
@@ -491,7 +491,7 @@ class PollBlock(PollBase):
 
         display_name = data.get('display_name', '').strip()
         if not question:
-            result['errors'].append("You must specify a question.")
+            result['errors'].append("Вы должны указать вопрос.")
             result['success'] = False
 
         answers = self.gather_items(data, result, 'Answer', 'answers')
@@ -909,22 +909,22 @@ class CheckPollBlock(PollBase):
     # pylint: disable=too-many-instance-attributes
 
     display_name = String(default='CheckPoll')
-    question = String(default='What is your favorite color?')
+    question = String(default='Ваш любимый цвет?')
     # This will be converted into an OrderedDict.
     # Key, (Label, Image path)
     answers = List(
-        default=(('R', {'label': 'Red', 'img': None}), ('B', {'label': 'Blue', 'img': None}),
-                 ('G', {'label': 'Green', 'img': None}), ('O', {'label': 'Other', 'img': None})),
-        scope=Scope.settings, help="The answer options on this poll."
+        default=(('R', {'label': 'Красный', 'img': None}), ('B', {'label': 'Голубой', 'img': None}),
+                 ('G', {'label': 'Зеленый', 'img': None}), ('O', {'label': 'Другой', 'img': None})),
+        scope=Scope.settings, help="Варианты ответов."
     )
     tally = Dict(default={'R': 0, 'B': 0, 'G': 0, 'O': 0},
                  scope=Scope.user_state_summary,
-                 help="Total tally of answers from students.")
+                 help="Статистика ответов.")
 
     detailed_tally = List(scope=Scope.user_state_summary,
-                 help="Total tally of answers from students with detailes.")
+                 help="Детальная статистика ответов.")
 
-    choices = List(scope=Scope.user_state, help="The student's answer")
+    choices = List(scope=Scope.user_state, help="Ответ студента.")
     event_namespace = 'xblock.checkpoll'
 
     #default copy - OK
@@ -1067,7 +1067,7 @@ class CheckPollBlock(PollBase):
             'items': [
                 {
                     'key': key, 'text': value['label'], 'img': value['img'],
-                    'noun': 'answer', 'image': True,
+                    'noun': 'ответ', 'image': True,
                     }
                 for key, value in self.answers
             ],
@@ -1109,7 +1109,7 @@ class CheckPollBlock(PollBase):
 
         old_choices = self.get_choices()
         if (old_choices is not None) and not self.private_results:
-            result['errors'].append('You have already voted in this poll.')
+            result['errors'].append('Вы уже проголосовали в этом опросе.')
             return result
 
         try:
@@ -1117,7 +1117,7 @@ class CheckPollBlock(PollBase):
             #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
         except KeyError:
-            result['errors'].append('Answer not included with request.')
+            result['errors'].append('Ответ не включен в запрос.')
             return result
 
         try:
@@ -1125,7 +1125,7 @@ class CheckPollBlock(PollBase):
             #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
         except KeyError:
-            result['errors'].append('Username not included with request.')
+            result['errors'].append('Имя пользователя не включено в запрос.')
             return result
 
 
@@ -1137,7 +1137,7 @@ class CheckPollBlock(PollBase):
             self.submissions_count = 0
 
         if not self.can_vote():
-            result['errors'].append('You have already voted as many times as you are allowed.')
+            result['errors'].append('Вы уже проголосвали максимально допустимое число раз.')
             return result
 
         #we have username and need to include it in choices
@@ -1181,7 +1181,7 @@ class CheckPollBlock(PollBase):
 
         display_name = data.get('display_name', '').strip()
         if not question:
-            result['errors'].append("You must specify a question.")
+            result['errors'].append("Вы должны указать вопрос.")
             result['success'] = False
 
         answers = self.gather_items(data, result, 'Answer', 'answers')

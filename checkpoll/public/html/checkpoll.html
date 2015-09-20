@@ -24,17 +24,17 @@
           </li>
       {% endfor %}
       </ul>
-      <input class="input-main" type="button" name="poll-submit" value="{% if choice %}Resubmit{% else %}Submit{% endif %}" disabled />
+      <input class="input-main" type="button" name="poll-submit" value="{% if choice %}Отправить заново{% else %}Отправить{% endif %}" disabled />
   </form>
-  <div class="poll-voting-thanks{% if not choice or can_vote %} poll-hidden{% endif %}"><span>Thank you for your submission!</span></div>
+  <div class="poll-voting-thanks{% if not choice or can_vote %} poll-hidden{% endif %}"><span>Спасибо за Ваш ответ!</span></div>
   <div class="poll-submissions-count poll-hidden">
-      You have used <span class="poll-current-count">{{ submissions_count }}</span>
-      out of <span class="poll-max-submissions">{{ max_submissions }}</span> submissions.
+      Вы использовали <span class="poll-current-count">{{ submissions_count }}</span>
+      из <span class="poll-max-submissions">{{ max_submissions }}</span> попыток.
   </div>
   {% if feedback %}
   <div class="poll-feedback-container{% if not choice %} poll-hidden{% endif %}">
       <hr />
-      <h3 class="poll-header">Feedback</h3>
+      <h3 class="poll-header">Обратная связь</h3>
       <div class="poll-feedback">
           {{feedback|safe}}
       </div>
@@ -42,7 +42,7 @@
   {% endif %}
 
   {% if can_view_private_results %}
-      <div class="view-results-button-wrapper"><a class="view-results-button">View results</a></div>
+      <div class="view-results-button-wrapper"><a class="view-results-button">Посмотреть результаты</a></div>
     {% endif %}
 {% endif %}
 </div>

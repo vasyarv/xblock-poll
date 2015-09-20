@@ -9,7 +9,6 @@ function CheckPollUtil (runtime, element, pollType) {
     var self = this;
 
     this.init = function() {
-        console.log("this init");
         // Initialization function used for both Poll Types
         this.voteUrl = runtime.handlerUrl(element, 'vote');
         this.tallyURL = runtime.handlerUrl(element, 'get_results');
@@ -28,9 +27,6 @@ function CheckPollUtil (runtime, element, pollType) {
         this.viewResultsButton.click(this.getResults);
 
 
-
-        console.log(this.downloadResultsButton);
-        console.log(this.viewResultsButton);
         // If the submit button doesn't exist, the user has alread
         // selected a choice. Render results instead of initializing machinery.
         var max_submissions = parseInt($('.poll-max-submissions', element).text());
@@ -55,7 +51,6 @@ function CheckPollUtil (runtime, element, pollType) {
     };
 
     this.checkPollInit = function(){
-        console.log("checkpollInit");
         // Initialization function for Survey Blocks
 
         // If the user is unable to vote, disable input.
@@ -64,7 +59,6 @@ function CheckPollUtil (runtime, element, pollType) {
             return
         }
 
-        console.log("verify all in checkpoll init");
         self.checkAnswers.bind("change.enableSubmit", self.verifyAll);
 
         self.submit.click(function () {
@@ -91,7 +85,6 @@ function CheckPollUtil (runtime, element, pollType) {
     }
 
     this.checkPollChoices = function () {
-        console.log("checkpollChoices");
         var choices = [];
         self.checkAnswers.each(function(index, el) {
             if (el.checked) {
@@ -171,14 +164,12 @@ function CheckPollUtil (runtime, element, pollType) {
     };
 
     this.checkedElement = function (el) {
-        console.log("checked element");
         // Given the DOM element of a radio, get the selector for the checked element
         // with the same name.
         return "input[name='" + el.prop('name') + "']:checked"
     };
 
     this.verifyAll = function () {
-        console.log("verify all");
         // Verify that all questions have an answer selected.
         var doEnable = true;
 
@@ -193,8 +184,6 @@ function CheckPollUtil (runtime, element, pollType) {
 
             });
 
-            console.log(JSON.stringify(temp));
-
             if (! temp.length) {
                 doEnable = false;
                 return false
@@ -208,14 +197,12 @@ function CheckPollUtil (runtime, element, pollType) {
             });
         }
 
-        console.log("Verify all is true");
         if (doEnable){
             self.enableSubmit();
         }
     };
 
     this.onSubmit = function (data) {
-        console.log("on submit");
         // Fetch the results from the server and render them.
         if (!data['success']) {
             alert(data['errors'].join('\n'));
@@ -243,7 +230,6 @@ function CheckPollUtil (runtime, element, pollType) {
     };
 
     this.getResults = function () {
-        console.log("get rsults");
         // Used if results are not private, to show the user how other students voted.
         $.ajax({
             // Semantically, this would be better as GET, but we can use helper
@@ -317,7 +303,6 @@ function CheckPollUtil (runtime, element, pollType) {
     }
 
     this.downloadResults = function () {
-        console.log("dwnload rsults");
         // Used if results are not private, to show the user how other students voted.
         $.ajax({
             // Semantically, this would be better as GET, but we can use helper
@@ -326,8 +311,6 @@ function CheckPollUtil (runtime, element, pollType) {
             url: self.downloadUrl,
             data: JSON.stringify({}),
             success: function (data) {
-                console.log(data);
-                console.log(self.checkPollToCsv(data));
                 self.downloadFile(data['course_info']+'.csv', self.checkPollToCsv(data));
             }
         })
@@ -335,18 +318,14 @@ function CheckPollUtil (runtime, element, pollType) {
 
 
     this.enableSubmit = function () {
-        console.log("enable submit");
         // Enable the submit button.
         self.submit.removeAttr("disabled");
-        console.log("enable submit remove disabled");
         self.checkAnswers.unbind("change.enableSubmit");  //HERE IS THE BUGGG
         self.answers.unbind("change.enableSubmit");
     };
 
     var run_init = this.init();
     if (run_init) {
-        console.log("run init");
-        console.log(pollType);
         var init_map = {'poll': self.pollInit, 'survey': self.surveyInit, 'checkpoll': self.checkPollInit};
         init_map[pollType]()
     }
