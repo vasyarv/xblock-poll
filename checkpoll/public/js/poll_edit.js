@@ -194,6 +194,7 @@ function PollEditUtil(runtime, element, pollType) {
         console.log(tracker, data, prefix, field);
         var key = 'label';
         var name = scope.name.replace(prefix + '-', '');
+        console.log(name,scope.name);
         if (name.indexOf('img-') == 0){
             name = name.replace('img-', '');
             key = 'img'
