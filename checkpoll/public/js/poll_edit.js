@@ -191,7 +191,7 @@ function PollEditUtil(runtime, element, pollType) {
     };
 
     this.gather = function (scope, tracker, data, prefix, field) {
-        console.log(scope, tracker, data, prefix, field);
+        console.log(tracker, data, prefix, field);
         var key = 'label';
         var name = scope.name.replace(prefix + '-', '');
         if (name.indexOf('img-') == 0){
