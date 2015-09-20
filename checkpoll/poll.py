@@ -184,7 +184,9 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
         """
         if HAS_EDX_ACCESS and hasattr(self.runtime, 'user_id') and hasattr(self.runtime, 'course_id'):
             # Course staff users have permission to view results.
-            user_id = int(long(self.runtime.user_id))
+            import rpdb; rpdb.set_trace()
+            #user_id = int(long(self.runtime.user_id))
+            user_id = 5
             user = User.objects.get(id = user_id)
             if has_access(user, 'staff', self, self.runtime.course_id):
                 return True
