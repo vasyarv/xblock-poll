@@ -11,61 +11,59 @@
         </li>
         {% if not multiquestion %}
             <li class="field comp-setting-entry is-set">
-              <h2><label for="poll-question-editor">Question/Prompt</label></h2>
-              <a href="//daringfireball.net/projects/markdown/syntax" target="_blank">Markdown Syntax</a> is supported.
+              <h2><label for="poll-question-editor">Вопрос</label></h2>
+              <a href="//daringfireball.net/projects/markdown/syntax" target="_blank">Синтаксис Markdown</a> поддерживается.
               <div id="poll-question-editor-container">
                 <textarea class="input setting-input" name="question" id="poll-question-editor">{{question}}</textarea>
               </div>
-              <span class="tip setting-help">Enter the prompt for the user.</span>
+              <span class="tip setting-help">Введите вопрос, отображаемый пользователю.</span>
             </li>
         {% endif %}
         <li class="field comp-setting-entry is-set">
-           <h2><label for="poll-feedback-editor">Feedback</label></h2>
-           <a href="//daringfireball.net/projects/markdown/syntax" target="_blank">Markdown Syntax</a> is supported.
+           <h2><label for="poll-feedback-editor">Обратная связь</label></h2>
+           <a href="//daringfireball.net/projects/markdown/syntax" target="_blank">Синтаксис Markdown</a> поддерживается.
            <div id="poll-feedback-editor-container">
              <textarea class="input setting-input" name="feedback" id="poll-feedback-editor">{{feedback}}</textarea>
            </div>
             <span class="tip setting-help">
-                This text will be displayed for the user as some extra feedback after they have
-                submitted their response to the poll.
+                Этот текст будет показан пользователю в качестве дополнительной обратной связи
+                после того как он проголосует.
             </span>
         </li>
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
-                <label class="label setting-label poll-setting-label" for="poll-private-results">Private Results</label>
+                <label class="label setting-label poll-setting-label" for="poll-private-results">Скрыть результаты</label>
                 <select id="poll-private-results" class="input setting-input" name="private_results">
                     <!-- So far as I can see, there's not a proper style for checkboxes. LTI module does it this way. -->
-                    <option value="true" {% if private_results %} selected{% endif %}>True</option>
-                    <option value="false" {% if not private_results %} selected{% endif %}>False</option>
+                    <option value="true" {% if private_results %} selected{% endif %}>Да</option>
+                    <option value="false" {% if not private_results %} selected{% endif %}>Нет</option>
                 </select>
             </div>
             <span class="tip setting-help">
-                If this is set True, don't display results of the poll to the user.
+                Если отмечено Да, то пользователь не увидит результатов опроса.
             </span>
         </li>
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
-                <label class="label setting-label poll-setting-label" for="poll-max-submissions">Maximum Submissions</label>
+                <label class="label setting-label poll-setting-label" for="poll-max-submissions">Максимальное число попыток</label>
                 <input id="poll-max-submissions" type="number" min="0" step="1" value="{{ max_submissions }}"/>
             </div>
             <span class="tip setting-help">
-                Maximum number of times a user may submit a poll. <strong>Setting this to a value other than 1 will imply that
-                'Private Results' should be true.</strong> Setting it to 0 will allow infinite resubmissions.
+                Максимальное число попыток голосования для пользователя. <strong>Указание величины отличной от 1 подразумевает, что
+                в поле 'Скрыть результаты' должно быть отмечено 'Да'.</strong> Указание 0 означает, что может быть сколько угодно попыток.
             </span>
         </li>
         <li class="field comp-setting-entry is-set">
             <p>
-                <strong>Notes:</strong>
-                If you change an answer's text, all students who voted for that choice will have their votes updated to
-                the new text. You'll want to avoid changing an answer from something like 'True' to 'False', accordingly.
-                If you delete an answer, any votes for that answer will also be deleted. Students whose choices are deleted
-                may vote again, but will not lose course progress.
+                <strong>Замечания:</strong>
+                Если Вы измените текст ответа, то у всех студентов, проголосовавших за него, он так же изменится.
+                Не следует заменять ответы типа 'Да' на 'Нет' и наоборот.
+                Если Вы удалите ответ, то все голоса за него так же будут удалены. Студенты, чьи голоса удалены, смогут еще раз проголосовать,
+                не потеряв свой прогресс.
             </p>
             {%  if multiquestion %}
                 <p>
-                    Questions must be similarly cared for. If a question's text is changed, any votes for that question will remain.
-                    If a question is deleted, any student who previously took the survey will be permitted to retake it, but will not
-                    lose course progress.
+                    В случае множественных вопросов работают аналогичные правила.
                 </p>
             {% endif %}
         </li>
@@ -77,18 +75,18 @@
     <div class="xblock-actions">
         <ul>
             <li class="action-item" id="poll-add-answer">
-                <a href="#" class="button action-button" class="poll-add-item-link" onclick="return false;">Add Answer</a>
+                <a href="#" class="button action-button" class="poll-add-item-link" onclick="return false;">Добавить ответ</a>
             </li>
             {% if multiquestion %}
                 <li class="action-item" id="poll-add-question">
-                    <a href="#" class="button action-button" class="poll-add-item-link" onclick="return false;">Add Question</a>
+                    <a href="#" class="button action-button" class="poll-add-item-link" onclick="return false;">Добавить вопрос</a>
                 </li>
             {% endif %}
             <li class="action-item">
                 <input id="poll-submit-options" type="submit" class="button action-primary save-button" value="Save" onclick="return false;" />
             </li>
             <li class="action-item">
-                <a href="#" class="button cancel-button">Cancel</a>
+                <a href="#" class="button cancel-button">Отмена</a>
             </li>
         </ul>
     </div>
