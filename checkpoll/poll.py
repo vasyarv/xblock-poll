@@ -189,8 +189,11 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
                 user_id = int(long(self.runtime.user_id))
                 user = User.objects.get(id = user_id)
             else:
-                import rpdb; rpdb.set_trace()
-                user = self.runtime.user
+                if hasattr(self.runtime, 'user'):
+                    import rpdb; rpdb.set_trace()
+                    user = self.runtime.user
+                else:
+                    return False
             if has_access(user, 'staff', self, self.runtime.course_id):
                 return True
             else:
