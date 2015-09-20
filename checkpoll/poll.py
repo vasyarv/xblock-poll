@@ -185,9 +185,11 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
         if HAS_EDX_ACCESS and hasattr(self.runtime, 'user_id') and hasattr(self.runtime, 'course_id'):
             # Course staff users have permission to view results.
             #import rpdb; rpdb.set_trace()
-            #user_id = int(long(self.runtime.user_id))
-            user_id = 5
-            user = User.objects.get(id = user_id)
+            if self.runtime.user_id is not None:
+                user_id = int(long(self.runtime.user_id))
+                user = User.objects.get(id = user_id)
+            else:
+                user = self.runtime.user
             if has_access(user, 'staff', self, self.runtime.course_id):
                 return True
             else:
@@ -452,8 +454,8 @@ class PollBlock(PollBase):
 
 
 
-        #user_id = int(long(self.runtime.user_id))
-        user_id = 5
+        user_id = int(long(self.runtime.user_id))
+        #user_id = 5
 
         try:
             username = data['username']
@@ -1133,8 +1135,8 @@ class CheckPollBlock(PollBase):
 
 
 
-        #user_id = int(long(self.runtime.user_id))
-        user_id = 5
+        user_id = int(long(self.runtime.user_id))
+        #user_id = 5
 
         if old_choices is None:
             # Reset submissions count if old choices is bogus.
