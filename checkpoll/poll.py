@@ -163,7 +163,7 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
                 items.append([key, label])
 
         if not items:
-            import rpdb; rpdb.set_trace()
+            #import rpdb; rpdb.set_trace()
             result['errors'].append(
                 u"Вы должны включить хотя бы один {0}.".format(noun.lower()))
             result['success'] = False
@@ -193,7 +193,7 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
                 user = User.objects.get(id = user_id)
             else:
                 if hasattr(self.runtime, 'user'):
-                    import rpdb; rpdb.set_trace()
+                    #import rpdb; rpdb.set_trace()
                     user = self.runtime.user
                 else:
                     return False
