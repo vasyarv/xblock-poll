@@ -228,12 +228,15 @@ function PollEditUtil(runtime, element, pollType) {
         var data = {};
         var tracker;
         var gatherings = self.mappings[pollType]['gather'];
+        console.log(gatherings);
         for (var gathering in gatherings) {
             tracker = [];
             var field = gatherings[gathering]['field'];
             var prefix = gatherings[gathering]['prefix'];
             data[field] = [];
+            console.log($('#poll-form input', element));
             $('#poll-form input', element).each(function () {
+                console.log("1");
                 self.gather(this, tracker, data, prefix, field)
             });
         }
@@ -247,6 +250,7 @@ function PollEditUtil(runtime, element, pollType) {
         if (notify) {
             runtime.notify('save', {state: 'start', message: "Saving"});
         }
+        console.log(data);
         $.ajax({
             type: "POST",
             url: handlerUrl,
