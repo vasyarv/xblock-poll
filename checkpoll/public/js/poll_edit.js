@@ -191,6 +191,7 @@ function PollEditUtil(runtime, element, pollType) {
     };
 
     this.gather = function (scope, tracker, data, prefix, field) {
+        console.log(scope, tracker, data, prefix, field);
         var key = 'label';
         var name = scope.name.replace(prefix + '-', '');
         if (name.indexOf('img-') == 0){
@@ -202,12 +203,13 @@ function PollEditUtil(runtime, element, pollType) {
         if (! (scope.name.indexOf(prefix + '-') >= 0)) {
             return
         }
-        if (tracker.indexOf(name) == -1){
+        if (tracker.indexOf(name) == -1) {
             tracker.push(name);
             data[field].push({'key': name})
         }
         var index = tracker.indexOf(name);
         data[field][index][key] = scope.value;
+        console.log(data);
         return true
     };
 
