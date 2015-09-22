@@ -60,7 +60,7 @@ setup(
         'xblock.v1': [
             'checkpoll = checkpoll:CheckPollBlock',
             'poll = checkpoll:PollBlock',
-            'survey = checkpoll:SurveyBlock',
+            #'survey = checkpoll:SurveyBlock',
         ]
     },
     package_data=package_data("checkpoll", ["static", "public"]),
