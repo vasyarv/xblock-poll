@@ -219,7 +219,7 @@ function CheckPollUtil (runtime, element, pollType) {
             thanks.fadeOut(0).fadeIn('slow', 'swing');
             $('.poll-feedback-container', element).removeClass('poll-hidden');
             if (can_vote) {
-                $('input[name="poll-submit"]', element).val('Resubmit');
+                $('input[name="poll-submit"]', element).val('Ответить заново');
             } else {
                 $('input', element).attr('disabled', true)
             }

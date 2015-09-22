@@ -252,7 +252,7 @@ function PollEditUtil(runtime, element, pollType) {
         data['private_results'] = eval($('#poll-private-results', element).val());
 
         if (notify) {
-            runtime.notify('save', {state: 'start', message: "Saving"});
+            runtime.notify('save', {state: 'start', message: 'Сохранение'});
         }
         console.log(data);
         $.ajax({
@@ -266,7 +266,7 @@ function PollEditUtil(runtime, element, pollType) {
                     runtime.notify('save', {state: 'end'})
                 } else if (notify) {
                     runtime.notify('error', {
-                        'title': 'Error saving poll',
+                        'title': 'Ошибка при сохранении опроса',
                         'message': self.format_errors(result['errors'])
                     });
                 }

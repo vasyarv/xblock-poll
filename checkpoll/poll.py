@@ -226,7 +226,7 @@ class PollBase(XBlock, ResourceMixin, PublishEventMixin):
         # Better to send an error than to confuse the user by thinking this would work.
         if (max_submissions != 1) and not private_results:
             result['success'] = False
-            result['errors'].append(u"Приватные результаты доступны только если число максимальных попыток не равно 1.")
+            result['errors'].append(u"Скрытые результаты доступны только если число максимальных попыток не равно 1.")
         return max_submissions
 
 
@@ -237,7 +237,7 @@ class PollBlock(PollBase):
     """
     # pylint: disable=too-many-instance-attributes
 
-    display_name = String(default=u'Опрос с множественным выбором')
+    display_name = String(default=u'Опрос')
     question = String(default=u'Ваш любимый цвет?')
     # This will be converted into an OrderedDict.
     # Key, (Label, Image path)
@@ -920,7 +920,7 @@ class CheckPollBlock(PollBase):
     """
     # pylint: disable=too-many-instance-attributes
 
-    display_name = String(default=u'Опрос')
+    display_name = String(default=u'Опрос с множественным выбором')
     question = String(default=u'Ваш любимый цвет?')
     # This will be converted into an OrderedDict.
     # Key, (Label, Image path)
