@@ -32,11 +32,11 @@
     {{/each}}
     </ul>
     <input class="input-main" type="button" name="poll-submit" value="Отправить" disabled>
-    {{#if can_view_private_results}}
-    <a class="download-results-button">Скачать результаты</a>
-    {{/if}}
-    <div class="poll-footnote">Респондентов проголосовало: {{total}}{{#if plural}}{{/if}}.</div>
 
+    <div class="poll-footnote">Респондентов проголосовало: {{total}}{{#if plural}}{{/if}}.</div>
+{{#if can_view_private_results}}
+    <a style="cursor: pointer; " class="download-results-button">Скачать результаты</a>
+    {{/if}}
     {{#if feedback}}
         <hr />
         <h3 class="poll-header">Обратная связь</h3>

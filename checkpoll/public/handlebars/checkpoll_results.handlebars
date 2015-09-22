@@ -34,7 +34,7 @@
     <input class="input-main" type="button" name="poll-submit" value="Отправить" disabled>
     <div class="poll-footnote">Респондентов проголосовало: {{total}}{{#if plural}}{{/if}}.</div>
 {{#if can_view_private_results}}
-    <a class="download-results-button">Скачать результаты</a>
+    <a style="cursor: pointer; " class="download-results-button">Скачать результаты</a>
     {{/if}}
     {{#if feedback}}
         <hr />
