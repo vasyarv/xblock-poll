@@ -33,10 +33,7 @@
     </ul>
     <input class="input-main" type="button" name="poll-submit" value="Отправить" disabled>
     {{#if can_view_private_results}}
-    <div style="
-    padding: 5px 10px;
-    border-radius: 5px;
-    color: #646464;"><a class="download-results-button">Скачать результаты</a></div>
+    <a class="download-results-button">Скачать результаты</a>
     {{/if}}
     <div class="poll-footnote">Респондентов проголосовало: {{total}}{{#if plural}}{{/if}}.</div>
 
