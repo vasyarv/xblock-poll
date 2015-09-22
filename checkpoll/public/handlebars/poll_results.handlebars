@@ -32,17 +32,14 @@
     {{/each}}
     </ul>
     <input class="input-main" type="button" name="poll-submit" value="Отправить" disabled>
-    <div class="poll-footnote">Респондентов проголосовало: {{total}}{{#if plural}}{{/if}}.</div>
     {{#if can_view_private_results}}
-    <div style="float: right;
-    margin-left: 10px;
+    <div style="
     padding: 5px 10px;
     border-radius: 5px;
-    background-color: rgba(0,0,0,0.05);
-    text-align: right;
-    text-transform: uppercase;
     color: #646464;" class="view-results-button-wrapper"><a style="color: black;" class="download-results-button">Скачать результаты</a></div>
     {{/if}}
+    <div class="poll-footnote">Респондентов проголосовало: {{total}}{{#if plural}}{{/if}}.</div>
+
     {{#if feedback}}
         <hr />
         <h3 class="poll-header">Обратная связь</h3>
