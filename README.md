@@ -1,13 +1,11 @@
 # XBlock-Poll
 
 ##Установка
-
     1. Удалить стандатрный xblock-poll
     2. Убрать/изменить соответствующую зависимость в github.txt
     3. В случае возникновения ошибки, связанной с `egg-info` то  `pip install --upgrade setuptools`
-    4. `pip install -e git+https://github.com/vasyarv/xblock-poll@master#egg=xblock-poll`
-    5.  Если был обновлён setuptools, то нужно вернуть старую версию `pip install setuptools==0.8`
-    
+    4. pip install -e git+https://github.com/vasyarv/xblock-poll@master#egg=xblock-poll`
+    5. Если был обновлён setuptools, то нужно вернуть старую версию `pip install setuptools==0.8`
 ##Использование и ограничения
 X-Block поодерживает функциональность стандратного xblock-poll (за исключением survey). Помимо этого блок переведён на русский язык, добавлена возможность скачивать результаты и добавлен новый тип опросов с множественным выбором. 
 
