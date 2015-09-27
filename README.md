@@ -1,8 +1,25 @@
 # XBlock-Poll
 
-VASILY
+##Установка
 
-> A user-friendly way to query students.
+    1. Удалить стандатрный xblock-poll
+    2. Убрать/изменить соответствующую зависимость в github.txt
+    3. В случае возникновения ошибки, связанной с `egg-info` то  `pip install --upgrade setuptools`
+    4. `pip install -e git+https://github.com/vasyarv/xblock-poll@master#egg=xblock-poll`
+    5.  Если был обновлён setuptools, то нужно вернуть старую версию `pip install setuptools==0.8`
+    
+##Использование и ограничения
+X-Block поодерживает функциональность стандратного xblock-poll (за исключением survey). Помимо этого блок переведён на русский язык, добавлена возможность скачивать результаты и добавлен новый тип опросов с множественным выбором. 
+
+###Ограничения
+В случае, если внутри одного курса у вас несколько раз встречается данный блок с одним и тем же вопросом, то после скачивания переименуйте соответствующим образом файл, т.к. для идентификации в файле присутствует только id курса и вопрос
+
+В случае использования блока с множественным выбором вариантов не рекомендуется удалять варианты ответов, за которые уже были отданы голоса, т.к. это может привести к некорректной работе блока.
+
+В случае возникновения других проблем, а так же по прочим вопросам просьба писать на vasily.ryazanov@phystech.edu
+
+
+Ниже приведена официальная документация по xblock-poll
 
 This XBlock has been contributed by [McKinsey Academy](http://mckinseyacademy.com/), and is published under the
 AGPLv3 licence (see the [LICENSE](LICENSE) file). It has been developed by [OpenCraft](http://opencraft.com).
