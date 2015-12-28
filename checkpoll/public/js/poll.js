@@ -60,6 +60,7 @@ function CheckPollUtil (runtime, element, pollType) {
         }
 
         self.checkAnswers.bind("change.enableSubmit", self.verifyAll);
+        self.checkAnswers.bind("change", self.verifyAll);
 
         self.submit.click(function () {
             $.ajax({
@@ -171,6 +172,7 @@ function CheckPollUtil (runtime, element, pollType) {
     };
 
     this.verifyAll = function () {
+        console.log("Verify_all");
         // Verify that all questions have an answer selected.
         var doEnable = true;
 
@@ -323,6 +325,13 @@ function CheckPollUtil (runtime, element, pollType) {
         self.submit.removeAttr("disabled");
         self.checkAnswers.unbind("change.enableSubmit");  //HERE IS THE BUGGG
         self.answers.unbind("change.enableSubmit");
+    };
+
+    this.disableSubmit = function () {
+        // Enable the submit button.
+        self.submit.prop("disabled", true);
+        self.checkAnswers.bind("change.enableSubmit");  //HERE IS THE BUGGG
+        self.answers.bind("change.enableSubmit");
     };
 
     var run_init = this.init();
