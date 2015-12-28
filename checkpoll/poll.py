@@ -466,7 +466,7 @@ class PollBlock(PollBase):
         #user_id = 5
 
         try:
-            u = UserProfile.objects.get(user__id=user_id)
+            u = UserProfile.objects.get(user_id=user_id)
             username = u.user.username
             #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
@@ -1135,7 +1135,7 @@ class CheckPollBlock(PollBase):
             return result
 
         try:
-            u = UserProfile.objects.get(user__id=user_id)
+            u = UserProfile.objects.get(user_id=user_id)
             username = u.user.username
             #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
