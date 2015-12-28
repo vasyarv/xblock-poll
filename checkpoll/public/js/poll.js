@@ -75,8 +75,8 @@ function CheckPollUtil (runtime, element, pollType) {
     };
 
     this.getUserName = function () {
-        var edxInfo = getCookie("edx-user-info").replace(/\\054/g, ',').replace(/\\"/g, '"');
         return "noname";
+        var edxInfo = getCookie("edx-user-info").replace(/\\054/g, ',').replace(/\\"/g, '"');
         if (edxInfo.charAt(0) == '"')
             edxInfo = edxInfo.substring(1);
         if (edxInfo.charAt(edxInfo.length-1) == '"')
