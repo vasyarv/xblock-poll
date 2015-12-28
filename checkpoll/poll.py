@@ -20,6 +20,7 @@
 # along with this program in a file in the toplevel directory called
 # "AGPLv3".  If not, see <http://www.gnu.org/licenses/>.
 #
+from studemt.models import UserProfile
 
 from collections import OrderedDict
 
@@ -465,7 +466,8 @@ class PollBlock(PollBase):
         #user_id = 5
 
         try:
-            username = data['username']
+            u = UserProfile.objects.get(user__id=user_id)
+            username = u.user.username
             #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
         except KeyError:
@@ -1133,7 +1135,8 @@ class CheckPollBlock(PollBase):
             return result
 
         try:
-            username = data['username']
+            u = UserProfile.objects.get(user__id=user_id)
+            username = u.user.username
             #choices = data['choices'][1:-1].split(",") #string to list
             #MODIFY THIS BLOCK!!!!
         except KeyError:

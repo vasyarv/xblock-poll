@@ -1,10 +1,3 @@
-/* Javascript for PollBlock. */
-function getCookie(name) {
-  var value = "; " + document.cookie;
-  var parts = value.split("; " + name + "=");
-  if (parts.length == 2) return parts.pop().split(";").shift();
-}
-
 function CheckPollUtil (runtime, element, pollType) {
     var self = this;
 
@@ -75,17 +68,6 @@ function CheckPollUtil (runtime, element, pollType) {
         self.verifyAll();
     };
 
-    this.getUserName = function () {
-        return "noname";
-        var edxInfo = getCookie("edx-user-info").replace(/\\054/g, ',').replace(/\\"/g, '"');
-        if (edxInfo.charAt(0) == '"')
-            edxInfo = edxInfo.substring(1);
-        if (edxInfo.charAt(edxInfo.length-1) == '"')
-            edxInfo = edxInfo.substring(0,edxInfo.length-1);
-        var username = JSON.parse(edxInfo).username;
-        return username;
-    }
-
     this.checkPollChoices = function () {
         var choices = [];
         self.checkAnswers.each(function(index, el) {
@@ -115,7 +97,7 @@ function CheckPollUtil (runtime, element, pollType) {
             $.ajax({
                 type: "POST",
                 url: self.voteUrl,
-                data: JSON.stringify({"choice": choice,  username: self.getUserName()}),
+                data: JSON.stringify({"choice": choice}),
                 success: self.onSubmit
             });
         });
@@ -177,21 +159,18 @@ function CheckPollUtil (runtime, element, pollType) {
         var doEnable = true;
 
         if (pollType == "checkpoll") {
-            var temp = [];
+            var temp = 0;
             //seems that this function should be the same
             self.checkAnswers.each(function (index, el) {
                 if (el.checked) {
-                    el = $(el);
-                    temp.push(el.val()); //maybe element is needed
+                    temp++; //maybe element is needed
                 }
-
             });
 
-            if (! temp.length) {
+            if (temp == 0) {
                 doEnable = false;
-                return false
             }
-        } else {
+        } else { //pollType == "survey" || "poll")
             self.answers.each(function (index, el) {
                 if (!$(self.checkedElement($(el)), element).length) {
                     doEnable = false;
@@ -202,6 +181,8 @@ function CheckPollUtil (runtime, element, pollType) {
 
         if (doEnable){
             self.enableSubmit();
+        } else {
+            self.disableSubmit();
         }
     };
 
@@ -321,16 +302,14 @@ function CheckPollUtil (runtime, element, pollType) {
 
 
     this.enableSubmit = function () {
-        // Enable the submit button.
         self.submit.removeAttr("disabled");
-        self.checkAnswers.unbind("change.enableSubmit");  //HERE IS THE BUGGG
+        self.checkAnswers.unbind("change.enableSubmit");
         self.answers.unbind("change.enableSubmit");
     };
 
     this.disableSubmit = function () {
-        // Enable the submit button.
         self.submit.prop("disabled", true);
-        self.checkAnswers.bind("change.enableSubmit");  //HERE IS THE BUGGG
+        self.checkAnswers.bind("change.enableSubmit");
         self.answers.bind("change.enableSubmit");
     };
 
