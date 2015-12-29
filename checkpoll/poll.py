@@ -1134,6 +1134,7 @@ class CheckPollBlock(PollBase):
             result['errors'].append(u'Ответ не включен в запрос.')
             return result
 
+        user_id = int(long(self.runtime.user_id))
         try:
             u = UserProfile.objects.get(user__id=user_id)
             username = u.user.username
@@ -1145,7 +1146,6 @@ class CheckPollBlock(PollBase):
 
 
 
-        user_id = int(long(self.runtime.user_id))
         #user_id = 5
 
         if old_choices is None:
