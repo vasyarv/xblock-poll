@@ -6,8 +6,6 @@ function CheckPollUtil (runtime, element, pollType) {
         this.voteUrl = runtime.handlerUrl(element, 'vote');
         this.tallyURL = runtime.handlerUrl(element, 'get_results');
         this.downloadUrl = runtime.handlerUrl(element, 'download_results');
-        console.log(this.downloadUrl);
-
         this.submit = $('input[type=button]', element);
 
 
@@ -154,7 +152,6 @@ function CheckPollUtil (runtime, element, pollType) {
     };
 
     this.verifyAll = function () {
-        console.log("Verify_all");
         // Verify that all questions have an answer selected.
         var doEnable = true;
 
